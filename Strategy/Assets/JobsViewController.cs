@@ -15,12 +15,12 @@ public class JobsViewController : MonoBehaviour
     private List<JobViewController> _createdQueueElements;
     private JobQueue _currentQueue;
 
-    void Start()
+    private void Start()
     {
-        CurrentJobView.CancelAction = _currentQueue.CancelJob;
-    }    
+        gameObject.SetActive(false);
+    }
 
-    public void LoadJobs(JobQueue jobQueue)
+    public void LoadQueue(JobQueue jobQueue)
     {
         ClearCurrentItems();
 
@@ -31,9 +31,9 @@ public class JobsViewController : MonoBehaviour
             controller.CancelJob = () => _currentQueue.CancelJob(job);
             controller.LoadJob(job);
         }
-
-
         _currentQueue = jobQueue;
+        CurrentJobView.CancelAction = _currentQueue.CancelJob;
+
         CurrentJobView.LoadJob(jobQueue.CurrentJob);
     }
 

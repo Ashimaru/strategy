@@ -18,49 +18,45 @@ public class LocationViewController : MonoBehaviour
     private bool AlwaysLoadAllData;
 
     private Action _startArmyCreation;
-
+    private Location _currentLocation;
     private MonoBehaviour _activeView;
+
+    public void CreateArmyFromGarrison()
+    {
+        _startArmyCreation();
+    }
+
     public void LoadLocation(Location location, Action createArmyCallback)
     {
         if (location == null)
         {
             gameObject.SetActive(false);
             _startArmyCreation = null;
+            _currentLocation = null;
             return;
         }
 
+        _currentLocation = location;
         gameObject.SetActive(true);
         var locationData = location.LocationData;
+        locationName.text = locationData.LocationName;
+
         if (AlwaysLoadAllData || location.LocationData.alignment == Alignment.Human)
         {
-            LoadArmyView
-            armyView.LoadArmyInfo(locationData.Garrison);
+            LoadArmyView(locationData.Garrison, createArmyCallback);            
         }
-
-
     }
 
-    public void LoadArmyView( Action createArmyCallback, )
+    private void LoadArmyView(Army army, Action createArmyCallback)
     {
         _activeView = armyView;
 
         _startArmyCreation = createArmyCallback;
-
-
-        var locationData = location.LocationData;
         armyView.ClearArmyInfo();
-        locationName.text = locationData.LocationName;
-
+        armyView.LoadArmyInfo(army);
     }
 
-    public void LoadJobsView()
-    {
 
-    }
-    public void CreateArmyFromGarrison()
-    {
-        _startArmyCreation();
-    }
 
     private void Start()
     {

@@ -29,7 +29,7 @@ public class ArmyViewController : MonoBehaviour
     public void LoadArmyInfo(Army army)
     {
         this.army = army;
-        gameObject.SetActive(true);
+ 
         armyName.text = army.ArmyName;
         if (currentAssignmentDescription)
         {
