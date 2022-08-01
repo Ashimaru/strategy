@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c9124ad1e0842c64a8665f0f760e2aa9, type: 3}
+  m_Name: PlayerResources
+  m_EditorClassIdentifier: 
+  _bodies:
+    _amount: 10
+  _bones:
+    _amount: 20
+  _mana:
+    _amount: 100
+  _gold:
+    _amount: 50
