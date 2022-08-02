@@ -6,7 +6,7 @@ using UnityEngine;
 
 public class JobViewController : MonoBehaviour
 {
-    public Action CancelJob;
+    public Action CancelJob { get; set; }
 
     [SerializeField]
     private TextMeshProUGUI _name;

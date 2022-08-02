@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UIElements;
+using UnityEngine.UI;
 using TMPro;
 using System;
 
@@ -11,6 +11,11 @@ public class LocationViewController : MonoBehaviour
     private ArmyViewController armyView;
     [SerializeField]
     private JobsViewController jobsView;
+
+    [SerializeField]
+    private Button armyViewButton;
+    [SerializeField]
+    private Button queueViewButton;
 
     [SerializeField]
     private TextMeshProUGUI locationName;
@@ -52,9 +57,8 @@ public class LocationViewController : MonoBehaviour
     {
         if (location == null)
         {
+            UnloadAllViews();
             gameObject.SetActive(false);
-            _startArmyCreation = null;
-            _currentLocation = null;
             return;
         }
 
@@ -63,13 +67,23 @@ public class LocationViewController : MonoBehaviour
         var locationData = location.LocationData;
         locationName.text = locationData.LocationName;
 
-        if (AlwaysLoadAllData || location.LocationData.alignment == Alignment.Necro)
+        var shouldLoadDetails = AlwaysLoadAllData || location.LocationData.alignment == Alignment.Necro;
+        armyViewButton.interactable = shouldLoadDetails;
+        queueViewButton.interactable = shouldLoadDetails;
+        if (!shouldLoadDetails)
         {
-            LoadArmyData(locationData.Garrison, createArmyCallback);
-            LoadJobsData(jobQueue);
+            UnloadAllViews();
+            return;
         }
 
-        ShowArmyView();
+
+        LoadArmyData(locationData.Garrison, createArmyCallback);
+        LoadJobsData(jobQueue);
+
+        if(_activeView == null)
+        {
+            ShowArmyView();
+        }
     }
 
     public void LoadArmyData(Army army, Action createArmyCallback)
@@ -86,10 +100,18 @@ public class LocationViewController : MonoBehaviour
     }
 
 
-
     private void Start()
     {
         gameObject.SetActive(false);
+    }
+
+    private void UnloadAllViews()
+    {
+        armyView.ClearArmyInfo();
+        jobsView.LoadQueue(null);
+        _startArmyCreation = null;
+        _currentLocation = null;
+        _activeView = null;
     }
 
 

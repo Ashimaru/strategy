@@ -22,6 +22,17 @@ public class JobsViewController : MonoBehaviour
 
     public void LoadQueue(JobQueue jobQueue)
     {
+        if(_currentQueue != null)
+        {
+            _currentQueue.OnQueueChanged -= RefreshView;
+        }
+
+        if(jobQueue == null)
+        {
+            _currentQueue = null;
+            gameObject.SetActive(false);
+            return;
+        }
         _currentQueue = jobQueue;
         _currentQueue.OnQueueChanged += RefreshView;
         CurrentJobView.CancelAction = _currentQueue.CancelJob;

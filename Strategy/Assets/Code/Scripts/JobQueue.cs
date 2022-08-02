@@ -14,6 +14,10 @@ public class Job
     public JobData Data { get; private set; }
     public Action OnJobDone { get; private set; }
     public Action OnJobCancelled { get; private set; }
+
+    public delegate void JobProgressUpdate(float progress, float timeLeft);
+    public JobProgressUpdate OnProgressUpdate { get; set; } = delegate { };
+
 }
 
 public class JobQueue : MonoBehaviour
@@ -28,29 +32,31 @@ public class JobQueue : MonoBehaviour
     private int _maxSize = 10;
 
     private Timer _currentTimer;
+    private static int id = 0;
 
     void Update()
     {
-        if(Input.GetKeyUp(KeyCode.K))
+
+        if (Input.GetKeyUp(KeyCode.K))
         {
             var data = ScriptableObject.CreateInstance<JobData>();
-            data.name = "Dummy Job";
+            data.name = "Dummy Job " + ++id;
 
             AddToQueue(new Job(data,
-                () => Debug.Log("JOB DONE!"),
-                () => Debug.Log("JOB CANCELLED")));
+                () => Debug.Log(data.name + " DONE!"),
+                () => Debug.Log(data.name + " CANCELLED")));
         }
     }
-    
+
 
     public void AddToQueue(Job job)
     {
-        if(Jobs.Count >= _maxSize)
+        if (Jobs.Count >= _maxSize)
         {
             return;
         }
 
-        if(CurrentJob == null)
+        if (CurrentJob == null)
         {
             StartJob(job);
             return;
@@ -65,16 +71,19 @@ public class JobQueue : MonoBehaviour
 
     public void CancelJob(Job job)
     {
-        if(CurrentJob == job)
+        if (CurrentJob == job)
         {
             Destroy(_currentTimer);
             CurrentJob.OnJobCancelled();
+            CurrentJob = null;
             StartNextJobFromQueue();
+            OnQueueChanged();
             return;
         }
 
         if (Jobs.Remove(job) && OnQueueChanged != null)
         {
+            job.OnJobCancelled();
             OnQueueChanged();
         }
 
@@ -82,8 +91,8 @@ public class JobQueue : MonoBehaviour
 
     private void StartNextJobFromQueue()
     {
-        if(Jobs.Count == 0)
-        { 
+        if (Jobs.Count == 0)
+        {
             return;
         }
         var newJob = Jobs[0];
@@ -94,18 +103,16 @@ public class JobQueue : MonoBehaviour
     private void StartJob(Job job)
     {
         CurrentJob = job;
-       _currentTimer =  Utils.CreateTimer(gameObject, job.Data.Duration, OnJobCompleted);
-        if(OnQueueChanged != null)
-        { 
-            OnQueueChanged(); 
-        }
+        _currentTimer = Utils.CreateTimer(gameObject, job.Data.Duration, OnJobCompleted, (progress, timeLeft) => job.OnProgressUpdate(progress, timeLeft));
+        OnQueueChanged?.Invoke();
     }
 
     private void OnJobCompleted()
     {
         CurrentJob.OnJobDone();
         CurrentJob = null;
-        OnQueueChanged();
+        OnQueueChanged?.Invoke();
+
         StartNextJobFromQueue();
     }
 

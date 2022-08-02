@@ -2512,8 +2512,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   armyView: {fileID: 1991763402}
   jobsView: {fileID: 1400992789}
+  armyViewButton: {fileID: 33021517}
+  queueViewButton: {fileID: 2013080373}
   locationName: {fileID: 618906722}
-  AlwaysLoadAllData: 1
+  AlwaysLoadAllData: 0
 --- !u!1 &603089226
 GameObject:
   m_ObjectHideFlags: 0

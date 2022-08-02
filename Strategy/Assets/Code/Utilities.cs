@@ -24,8 +24,17 @@ using UnityEngine;
         public static Timer CreateTimer(GameObject gameObject, float duration, Action callback)
         {
             var timer = gameObject.AddComponent<Timer>();
-            timer.TimeLeft = duration;
+            timer.TotalTime = duration;
             timer.OnTimeElapsed = callback;
             return timer;
         }
+
+    public static Timer CreateTimer(GameObject gameObject, float duration, Action callback, Action<float, float> onProgressUpdate)
+    {
+        var timer = gameObject.AddComponent<Timer>();
+        timer.TotalTime = duration;
+        timer.OnTimeElapsed = callback;
+        timer.OnProgressUpdate = onProgressUpdate;
+        return timer;
     }
+}

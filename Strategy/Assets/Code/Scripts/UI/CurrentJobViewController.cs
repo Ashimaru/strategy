@@ -17,18 +17,28 @@ public class CurrentJobViewController : MonoBehaviour
     private Job _job;
     public void LoadJob(Job job)
     {
-        if(job == null)
+        _timeLeft.text = "0";
+        _progress.value = 0;
+        if (job == null)
         {
             _name.text = "Idle";
-            _timeLeft.text = "0";
             return;
         }
         _job = job;
+        _timeLeft.text = "0";
+        _job.OnProgressUpdate += UpdateProgress;
         _name.text = job.Data.name;
     }
 
     public void CancelJob()
     {
+
         CancelAction.Invoke(_job);
+    }
+
+    private void UpdateProgress(float progress, float timeLeft)
+    {
+        _progress.value = progress;
+        _timeLeft.text = Mathf.CeilToInt(timeLeft).ToString();
     }
 }

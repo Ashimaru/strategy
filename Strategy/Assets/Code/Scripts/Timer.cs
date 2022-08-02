@@ -4,8 +4,19 @@ using UnityEngine;
 
 public class Timer : MonoBehaviour
 {
-    public float TimeLeft;
-    public Action OnTimeElapsed;
+
+    public float TotalTime { get => _totalTime; set
+        {
+            _totalTime = value;
+            _timeLeft = value;
+        }
+    }
+    public Action OnTimeElapsed { get; set; }
+
+    public Action<float, float> OnProgressUpdate;
+
+    private float _totalTime;
+    private float _timeLeft;
 
     public void Cancel()
     {
@@ -15,11 +26,13 @@ public class Timer : MonoBehaviour
 
     private void Update()
     {
-        TimeLeft -= Time.deltaTime;
-        if(TimeLeft <= 0)
+        _timeLeft -= Time.deltaTime;
+        if(_timeLeft <= 0)
         {
             OnTimeElapsed();
             Destroy(this);
         }
+
+        OnProgressUpdate?.Invoke(_timeLeft / _totalTime, _timeLeft);
     }
 }
