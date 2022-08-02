@@ -17,6 +17,12 @@ public class CurrentJobViewController : MonoBehaviour
     private Job _job;
     public void LoadJob(Job job)
     {
+        if(job == null)
+        {
+            _name.text = "Idle";
+            _timeLeft.text = "0";
+            return;
+        }
         _job = job;
         _name.text = job.Data.name;
     }

@@ -34,7 +34,7 @@ public class NecropolyController : MonoBehaviour
         }
         _location.ShouldSkipNextArmyEnter = true;
         Systems.Get<IArmyFactory>().CreateArmy(newArmy, _location.Position);
-        _locationView.LoadLocation(_location, CreateArmyFromGarrison);
+        _locationView.LoadArmyData(_location.LocationData.Garrison, CreateArmyFromGarrison);
     }
 
 

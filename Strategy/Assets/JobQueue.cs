@@ -21,18 +21,25 @@ public class JobQueue : MonoBehaviour
     public List<Job> Jobs { get; private set; } = new();
     public Job CurrentJob { get; private set; }
 
+    public delegate void QueueChangedCallback();
+    public QueueChangedCallback OnQueueChanged { get; set; }
+
     [SerializeField]
     private int _maxSize = 10;
 
     private Timer _currentTimer;
-    void Start()
+
+    void Update()
     {
-        var data = ScriptableObject.CreateInstance<JobData>();
-        data.name = "Dummy Job";
-       
-        AddToQueue(new Job(data, 
-            () => Debug.Log("JOB DONE!"),
-            () => Debug.Log("JOB CANCELLED")));
+        if(Input.GetKeyUp(KeyCode.K))
+        {
+            var data = ScriptableObject.CreateInstance<JobData>();
+            data.name = "Dummy Job";
+
+            AddToQueue(new Job(data,
+                () => Debug.Log("JOB DONE!"),
+                () => Debug.Log("JOB CANCELLED")));
+        }
     }
     
 
@@ -43,13 +50,17 @@ public class JobQueue : MonoBehaviour
             return;
         }
 
-        if(Jobs == null)
+        if(CurrentJob == null)
         {
             StartJob(job);
             return;
         }
 
         Jobs.Add(job);
+        if (OnQueueChanged != null)
+        {
+            OnQueueChanged();
+        }
     }
 
     public void CancelJob(Job job)
@@ -58,15 +69,21 @@ public class JobQueue : MonoBehaviour
         {
             Destroy(_currentTimer);
             CurrentJob.OnJobCancelled();
+            StartNextJobFromQueue();
+            return;
         }
 
-        StartNextJobFromQueue();
+        if (Jobs.Remove(job) && OnQueueChanged != null)
+        {
+            OnQueueChanged();
+        }
+
     }
 
     private void StartNextJobFromQueue()
     {
         if(Jobs.Count == 0)
-        {
+        { 
             return;
         }
         var newJob = Jobs[0];
@@ -78,11 +95,17 @@ public class JobQueue : MonoBehaviour
     {
         CurrentJob = job;
        _currentTimer =  Utils.CreateTimer(gameObject, job.Data.Duration, OnJobCompleted);
+        if(OnQueueChanged != null)
+        { 
+            OnQueueChanged(); 
+        }
     }
 
     private void OnJobCompleted()
     {
         CurrentJob.OnJobDone();
+        CurrentJob = null;
+        OnQueueChanged();
         StartNextJobFromQueue();
     }
 

@@ -9,6 +9,7 @@ public class SelectableLocation : MonoBehaviour, IFocusableTile
 {
     [SerializeField] private LocationViewController _locationView;
     private Location _location;
+    private JobQueue _jobQueue;
 
     public Action CreateArmyDelegate;
 
@@ -16,16 +17,17 @@ public class SelectableLocation : MonoBehaviour, IFocusableTile
     void Start()
     {
         _location = GetComponent<Location>();
+        _jobQueue = GetComponent<JobQueue>();
         Systems.Get<IClickableTile>().RegisterClickableTile(_location.Position, TileType.Location, this);
     }
 
     public void OnFocusAcquired()
     {
-        _locationView.LoadLocation(_location, CreateArmyDelegate);
+        _locationView.LoadLocation(_location, CreateArmyDelegate, _jobQueue);
     }
 
     public void OnFocusLost()
     {
-        _locationView.LoadLocation(null, null);
+        _locationView.LoadLocation(null, null, null);
     }
 }

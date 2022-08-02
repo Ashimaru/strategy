@@ -8,5 +8,5 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "Job", menuName = "Game/Job")]
 public class JobData : ScriptableObject
 {
-    [field: SerializeField] public float Duration { get; private set; } = 1000;
+    [field: SerializeField] public float Duration { get; private set; } = 1;
 }

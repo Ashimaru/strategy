@@ -21,12 +21,34 @@ public class LocationViewController : MonoBehaviour
     private Location _currentLocation;
     private MonoBehaviour _activeView;
 
+    public void ShowArmyView()
+    {
+        if(_activeView != null)
+        {
+            _activeView.gameObject.SetActive(false);
+        }
+
+        armyView.gameObject.SetActive(true);
+        _activeView = armyView; 
+    }
+    public void ShowJobsView()
+    {
+        if (_activeView != null)
+        {
+            _activeView.gameObject.SetActive(false);
+        }
+
+        jobsView.gameObject.SetActive(true);
+        _activeView=jobsView;
+    }
+
+
     public void CreateArmyFromGarrison()
     {
         _startArmyCreation();
     }
 
-    public void LoadLocation(Location location, Action createArmyCallback)
+    public void LoadLocation(Location location, Action createArmyCallback, JobQueue jobQueue)
     {
         if (location == null)
         {
@@ -41,19 +63,26 @@ public class LocationViewController : MonoBehaviour
         var locationData = location.LocationData;
         locationName.text = locationData.LocationName;
 
-        if (AlwaysLoadAllData || location.LocationData.alignment == Alignment.Human)
+        if (AlwaysLoadAllData || location.LocationData.alignment == Alignment.Necro)
         {
-            LoadArmyView(locationData.Garrison, createArmyCallback);            
+            LoadArmyData(locationData.Garrison, createArmyCallback);
+            LoadJobsData(jobQueue);
         }
+
+        ShowArmyView();
     }
 
-    private void LoadArmyView(Army army, Action createArmyCallback)
+    public void LoadArmyData(Army army, Action createArmyCallback)
     {
-        _activeView = armyView;
-
         _startArmyCreation = createArmyCallback;
         armyView.ClearArmyInfo();
         armyView.LoadArmyInfo(army);
+    }
+
+    private void LoadJobsData(JobQueue jobQueue)
+    {
+        jobsView.LoadQueue(jobQueue);
+        
     }
 
 
