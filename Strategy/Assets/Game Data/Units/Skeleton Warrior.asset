@@ -13,5 +13,7 @@ MonoBehaviour:
   m_Name: Skeleton Warrior
   m_EditorClassIdentifier: 
   UnitTypeName_: Skeleton Warrior
+  UnitType_: 0
   MeeleAttack_: 1
   RangedAttack_: 0
+  MaxHP_: 10

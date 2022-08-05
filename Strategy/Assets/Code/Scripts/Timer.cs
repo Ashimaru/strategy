@@ -11,8 +11,10 @@ public class Timer : MonoBehaviour
             _timeLeft = value;
         }
     }
-    public Action OnTimeElapsed { get; set; }
 
+    public bool IsRepeating { get; set; }
+
+    public Action OnTimeElapsed { get; set; }
     public Action<float, float> OnProgressUpdate;
 
     private float _totalTime;
@@ -27,12 +29,22 @@ public class Timer : MonoBehaviour
     private void Update()
     {
         _timeLeft -= Time.deltaTime;
-        if(_timeLeft <= 0)
+        OnProgressUpdate?.Invoke(_timeLeft / _totalTime, _timeLeft);
+        if (_timeLeft > 0)
         {
-            OnTimeElapsed();
-            Destroy(this);
+            return;
         }
 
-        OnProgressUpdate?.Invoke(_timeLeft / _totalTime, _timeLeft);
+        OnTimeElapsed();
+
+        if(IsRepeating)
+        {
+            _timeLeft = _totalTime;
+            return;
+        }
+
+        Destroy(this);
+
+
     }
 }
