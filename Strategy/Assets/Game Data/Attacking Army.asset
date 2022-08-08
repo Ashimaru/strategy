@@ -12,9 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 88e25844a5a07814881a6b247ce485df, type: 3}
   m_Name: Attacking Army
   m_EditorClassIdentifier: 
-  ArmyName: 
+  ArmyName: Necro
   CurrentAssigmentDescription: Standby
   Aligment: 0
   soldiers:
-  - NumberOfMembers: 10
+  - NumberOfMembers: 8
     unitData: {fileID: 11400000, guid: 3db202e2f12e0094680ee84fc9d214e2, type: 2}
+  - NumberOfMembers: 3
+    unitData: {fileID: 11400000, guid: 46069ce008080814db6f9db6cd44a398, type: 2}
