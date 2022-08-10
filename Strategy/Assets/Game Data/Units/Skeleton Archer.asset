@@ -13,5 +13,7 @@ MonoBehaviour:
   m_Name: Skeleton Archer
   m_EditorClassIdentifier: 
   UnitTypeName_: Skeleton Archer
+  UnitType_: 1
   MeeleAttack_: 1
   RangedAttack_: 5
+  MaxHP_: 7

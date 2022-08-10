@@ -1,7 +1,45 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using UnityEngine;
+using System.Xml.Serialization;
+
+[Serializable]
+class BattleEntry
+{
+    public BattleEntry()
+    {
+
+    }
+    public BattleEntry(string armyName)
+    {
+        ArmyName = armyName;
+    }
+
+    [field: SerializeField]
+    public string ArmyName { get; set; }
+    public int TotalDamage { get; set; }
+
+    public Dictionary<string, int> EnemyLosses { get; set; } = new();
+
+    public void AddDeadUnits(string unitName, int numberOfDeadUnits)
+    {
+        if(EnemyLosses.ContainsKey(unitName))
+        {
+            EnemyLosses[unitName] += numberOfDeadUnits;
+            return;
+        }
+        EnemyLosses.Add(unitName, numberOfDeadUnits); 
+    }
+
+}
+
+[Serializable]
+class BattleHistory
+{
+    public List<BattleEntry> Entries { get; set; } = new();
+}
 
 class BattleGroup
 {
@@ -48,8 +86,10 @@ public class BattleController : MonoBehaviour
     private Army _testAttackingArmy;
     [SerializeField]
     private Army _testDefendingArmy;
+    [SerializeField]
+    private bool _saveBattleLog = true;
 
-
+    private BattleHistory _history = new();
 
     void Start()
     {
@@ -77,16 +117,18 @@ public class BattleController : MonoBehaviour
 
     private void Attack(ArmyData attackingArmy, ArmyData defendingArmy)
     {
+        BattleEntry battleEntry = new BattleEntry(attackingArmy.Army.ArmyName);
         Debug.Log($"{attackingArmy.Army.ArmyName} attacks {defendingArmy.Army.ArmyName} for {++attackingArmy.AttackTurn} time.");
-        AttackWithMeleeUnits(attackingArmy, defendingArmy);
+        AttackWithMeleeUnits(attackingArmy, defendingArmy, battleEntry);
 
         if(!_isBattleFinished)
         {
-            AttackWithRangedUnits(attackingArmy, defendingArmy);
+            AttackWithRangedUnits(attackingArmy, defendingArmy, battleEntry);
         }
+        _history.Entries.Add(battleEntry);
     }
 
-    private void AttackWithMeleeUnits(ArmyData attackingArmy, ArmyData defendingArmy)
+    private void AttackWithMeleeUnits(ArmyData attackingArmy, ArmyData defendingArmy, BattleEntry battleEntry)
     {
         Debug.Log($"{attackingArmy.Army.ArmyName} attacks {defendingArmy.Army.ArmyName} with melee.");
         var meeleGroupsInAttackingArmy = GetGroupsOfType(UnitType.Melee, attackingArmy.Groups);
@@ -103,10 +145,11 @@ public class BattleController : MonoBehaviour
 
         var totalDamage = CalculateDamage(meeleGroupsInAttackingArmy, group => group.Group.unitData.MeeleAttack);
         Debug.LogFormat("Total damage dealt {0}", totalDamage);
+        battleEntry.TotalDamage += totalDamage;
         var damageForEachDefendingGroup = Mathf.CeilToInt((float)totalDamage / meeleGroupsInDefendingArmy.Count());
         Debug.LogFormat("Damage for singular group: {0}", damageForEachDefendingGroup);
 
-        var deadGroups = ApplyDamage(meeleGroupsInDefendingArmy, damageForEachDefendingGroup);
+        var deadGroups = ApplyDamage(meeleGroupsInDefendingArmy, damageForEachDefendingGroup, battleEntry);
 
         foreach (var group in deadGroups)
         {
@@ -116,14 +159,11 @@ public class BattleController : MonoBehaviour
 
         if (defendingArmy.Army.soldiers.Count == 0)
         {
-            Debug.LogFormat("{0} won!", attackingArmy.Army.ArmyName);
-            _attackingArmyAttackTimer.Cancel();
-            _defendingArmyAttackTimer.Cancel();
-            _isBattleFinished = true;
+            FinishBattle(attackingArmy);
         }
     }
 
-    private void AttackWithRangedUnits(ArmyData attackingArmy, ArmyData defendingArmy)
+    private void AttackWithRangedUnits(ArmyData attackingArmy, ArmyData defendingArmy, BattleEntry battleEntry)
     {
         Debug.Log($"{attackingArmy.Army.ArmyName} attacks {defendingArmy.Army.ArmyName} with ranged.");
         var rangedUnitsInAttackingArmy = GetGroupsOfType(UnitType.Ranged, attackingArmy.Groups);
@@ -136,10 +176,11 @@ public class BattleController : MonoBehaviour
 
         var totalDamage = CalculateDamage(rangedUnitsInAttackingArmy, group => group.Group.unitData.RangedAttack);
         Debug.LogFormat("Total damage dealt {0}", totalDamage);
+        battleEntry.TotalDamage += totalDamage;
         var damageForEachDefendingGroup = Mathf.CeilToInt((float)totalDamage / defendingArmy.Groups.Count());
         Debug.LogFormat("Damage for singular group: {0}", damageForEachDefendingGroup);
 
-        var deadGroups = ApplyDamage(defendingArmy.Groups, damageForEachDefendingGroup);
+        var deadGroups = ApplyDamage(defendingArmy.Groups, damageForEachDefendingGroup, battleEntry);
 
         foreach (var group in deadGroups)
         {
@@ -149,10 +190,7 @@ public class BattleController : MonoBehaviour
 
         if (defendingArmy.Army.soldiers.Count == 0)
         {
-            Debug.LogFormat("{0} won!", attackingArmy.Army.ArmyName);
-            _attackingArmyAttackTimer.Cancel();
-            _defendingArmyAttackTimer.Cancel();
-            _isBattleFinished = true;
+            FinishBattle(attackingArmy);
         }
     }
 
@@ -167,7 +205,7 @@ public class BattleController : MonoBehaviour
        return battleGroups.Sum(group => attackStatAccessor(group) * group.Group.NumberOfMembers);
     }
 
-    private List<BattleGroup> ApplyDamage(IEnumerable<BattleGroup> damageReceivingGroups, int amountOfDamage)
+    private List<BattleGroup> ApplyDamage(IEnumerable<BattleGroup> damageReceivingGroups, int amountOfDamage, BattleEntry battleEntry)
     {
         List<BattleGroup> deadGroups = new();
 
@@ -178,6 +216,7 @@ public class BattleController : MonoBehaviour
             {
                 defendingGroup.RemainingHealth -= amountOfDamage;
                 Debug.Log($"Net enough damage to kill {unitData.UnitTypeName}, remaining health={defendingGroup.RemainingHealth}");
+                battleEntry.AddDeadUnits(unitData.UnitTypeName, 0);
                 continue;
 
             }
@@ -192,8 +231,10 @@ public class BattleController : MonoBehaviour
                 defendingGroup.RemainingHealth = unitData.MaxHP - (overflowDamage - defendingGroup.RemainingHealth);
             }
 
+            howManyUnitsDie = Mathf.Max(howManyUnitsDie, defendingGroup.Group.NumberOfMembers);
             defendingGroup.Group.NumberOfMembers -= howManyUnitsDie;
             Debug.Log($"{howManyUnitsDie} {unitData.UnitTypeName} die after an attack, remaining health: {defendingGroup.RemainingHealth}. Units left in group: {defendingGroup.Group.NumberOfMembers}");
+            battleEntry.AddDeadUnits(unitData.UnitTypeName, howManyUnitsDie);
 
             if (defendingGroup.Group.NumberOfMembers <= 0)
             {
@@ -203,5 +244,19 @@ public class BattleController : MonoBehaviour
         }
 
         return deadGroups;
+    }
+
+    private void FinishBattle(ArmyData winner)
+    {
+        Debug.LogFormat("{0} won!", winner.Army.ArmyName);
+        _attackingArmyAttackTimer?.Cancel();
+        _defendingArmyAttackTimer?.Cancel();
+        _isBattleFinished = true;
+
+        if (!_saveBattleLog)
+        {
+            return;
+        }
+
     }
 }
