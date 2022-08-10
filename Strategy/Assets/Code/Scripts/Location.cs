@@ -21,6 +21,7 @@ public class Location : MonoBehaviour, IEnterableTile
     }
     public void OnArmyEnter(ArmyController army)
     {
+        //Debug.Log($"Testing if {army.army.ArmyName} can enter {LocationData.LocationName} army alingment={army.army.Aligment} city alingment={LocationData.alignment}");
         if(army.army.Aligment == LocationData.alignment)
         {
             if (!ShouldSkipNextArmyEnter)
