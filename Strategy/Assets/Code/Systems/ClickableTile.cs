@@ -40,6 +40,7 @@ public class ClickableTile : MonoBehaviour, IClickableTile
     [SerializeField] private Navigation navigation;
     [SerializeField] private Tilemap tiles;
     [SerializeField] private Scenario selectedScenario;
+    [SerializeField] private bool DebugMode = false;
 
     private List<Vector3Int> path = new();
     private List<Vector3Int> navPoints = new();
@@ -102,7 +103,8 @@ public class ClickableTile : MonoBehaviour, IClickableTile
             return;
         }
 
-        switch(selectedScenario)
+
+        switch (selectedScenario)
         {
             case Scenario.TestNav:
                 TestNav();
@@ -118,7 +120,9 @@ public class ClickableTile : MonoBehaviour, IClickableTile
 
     private void FocusOnTiles()
     {
-        var position = GetMousePosition();
+        var position = GetTilePostionOnGrid();
+        Debug.Log(position);
+
         var possibleTiles = clickableTiles.GetValueOrDefault(position);
         if (possibleTiles == null)
         {
@@ -132,7 +136,7 @@ public class ClickableTile : MonoBehaviour, IClickableTile
 
     private void TestNav()
     {
-        var position = GetMousePosition();
+        var position = GetTilePostionOnGrid();
 
         //navPoints.Add(position);
         //if (navPoints.Count == 1)
@@ -152,16 +156,23 @@ public class ClickableTile : MonoBehaviour, IClickableTile
 
         if (navPoints.Count == 2)
         {
-            ColorTiles(path, Color.white);
-            path = navigation.NavigateTowards(navPoints[0], navPoints[1]);
-            ColorTiles(path, Color.red);
+            if (!DebugMode)
+            {
+                ColorTiles(path, Color.white);
+                path = navigation.NavigateTowards(navPoints[0], navPoints[1]);
+                ColorTiles(path, Color.red);
+            }
+            else
+            {
+                navigation.NavigateTowards(navPoints[0], navPoints[1], ColorTile);
+            }
             return;
         }
 
         navPoints.Clear();
     }
 
-    Vector3Int GetMousePosition()
+    Vector3Int GetTilePostionOnGrid()
     {
         return Systems.Get<IGrid>().WorldToGrid(Camera.main.ScreenToWorldPoint(Input.mousePosition));
     }

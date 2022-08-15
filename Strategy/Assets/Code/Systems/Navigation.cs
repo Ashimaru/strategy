@@ -1,3 +1,5 @@
+using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -9,7 +11,7 @@ public interface INavigation
     List<Vector3Int> NavigateTowards(Vector3Int currentPosition, Vector3Int targetPosition);
 }
 
-internal class TileWalkCost
+internal class TileWalkCost : IEquatable<TileWalkCost>
 {
     public readonly Vector3Int tilePosition;
 
@@ -26,6 +28,21 @@ internal class TileWalkCost
         costToTarget = _costToTarget;
         total = costFromOrigin + costToTarget;
     }
+
+    public override bool Equals(object obj)
+    {
+        if (obj == null)
+        {
+            return false;
+        }
+        TileWalkCost otherTile = obj as TileWalkCost;
+        return otherTile != null ? Equals(otherTile) : false; 
+    }
+    public bool Equals(TileWalkCost other)
+    {
+        return tilePosition == other.tilePosition;
+    }
+
 }
 
 public class Navigation : MonoBehaviour, INavigation
@@ -33,48 +50,44 @@ public class Navigation : MonoBehaviour, INavigation
     private IGrid worldGrid;
     [SerializeField]
     private Tilemap tilemap;
+    private System.Action<Vector3Int, Color> colorTileMethod;
 
-    readonly private List<Vector3Int> POSSIBLE_MOVES_ON_ODD_COLUMN = new()
+    private Dictionary<Vector3Int, Vector3Int> gridToNavigation = new Dictionary<Vector3Int, Vector3Int>();
+    private Dictionary<Vector3Int, Vector3Int> navigationToGrid = new Dictionary<Vector3Int, Vector3Int>();
+
+    readonly private List<Vector3Int> POSSIBLE_MOVES = new()
     {
-        new Vector3Int(+1, +0, 0),
-        new Vector3Int(+1, +1, 0),
-        new Vector3Int(+0, +1, 0),
-        new Vector3Int(-1, +0, 0),
-        new Vector3Int(+0, -1, 0),
-        new Vector3Int(+1, -1, 0)
+        new Vector3Int(1, 0, -1),
+        new Vector3Int(1, -1, 0),
+        new Vector3Int(0, -1, 1),
+        new Vector3Int(-1, 0, 1),
+        new Vector3Int(-1, 1, 0),
+        new Vector3Int(0, 1, -1)
     };
-    readonly private List<Vector3Int> POSSIBLE_MOVES_ON_EVEN_COLUMN = new()
-    {
-        new Vector3Int(+1, +0, 0),
-        new Vector3Int(+0, +1, 0),
-        new Vector3Int(-1, +1, 0),
-        new Vector3Int(-1, +0, 0),
-        new Vector3Int(-1, -1, 0),
-        new Vector3Int(+0, -1, 0)
-    };
+
+
+    private readonly Vector3Int YZ_INCREMENT = new Vector3Int(0, 1, -1);
+    private readonly Vector3Int XZ_INCREMENT = new Vector3Int(1, 0, -1);
+    private readonly Vector3Int XY_INCREMENT = new Vector3Int(1, -1, 0);
+
     public List<Vector3Int> NavigateTowards(Vector3Int currentPosition, Vector3Int targetPosition)
     {
-        //Debug.Log("Navigating from " + currentPosition + " to " + targetPosition + " distance=" + worldGrid.CalculateDistance(currentPosition, targetPosition));
-        //List<Vector3Int> result = new();
-        //var nextStep = CalculateNexStep(currentPosition, targetPosition);
-        //while (nextStep.HasValue)
-        //{
-        //    result.Add(nextStep.Value);
-        //    nextStep = CalculateNexStep(nextStep.Value, targetPosition);
-        //}
-     
         return AStar(currentPosition, targetPosition);
+    }
+
+    public void NavigateTowards(Vector3Int currentPosition, Vector3Int targetPosition, System.Action<Vector3Int, Color> colorTile)
+    {
+        colorTileMethod = colorTile;
+        StartCoroutine(AStarDebug(currentPosition, targetPosition));
     }
 
     public List<Vector3Int> GetNeighbours(Vector3Int position)
     {
-
-        var possibleMoves = position.y % 2 == 0 ? new List<Vector3Int>(POSSIBLE_MOVES_ON_EVEN_COLUMN) : new List<Vector3Int>(POSSIBLE_MOVES_ON_ODD_COLUMN);
+        var possibleMoves = new List<Vector3Int>(POSSIBLE_MOVES);
         for (var index = 0; index < possibleMoves.Count; ++index)
         {
             possibleMoves[index] += position;
         }
-
         return possibleMoves;
     }
 
@@ -86,61 +99,189 @@ public class Navigation : MonoBehaviour, INavigation
     private void Start()
     {
         worldGrid = Systems.Get<IGrid>();
+
+        var xMin = tilemap.cellBounds.xMin;
+        var xMax = tilemap.cellBounds.xMax;
+        var yMin = tilemap.cellBounds.yMin;
+        var yMax = tilemap.cellBounds.yMax;
+        Vector3Int xNumerationOffset = Vector3Int.zero;
+        for (int x = xMin; x < xMax; ++x)
+        {
+            var yNumerationOffset = Vector3Int.zero;
+            for (int y = yMin; y < yMax; ++y)
+            {
+                gridToNavigation[new Vector3Int(x, y, 0)] = (xNumerationOffset + yNumerationOffset);
+                yNumerationOffset += y % 2 != 0 ? XY_INCREMENT : XZ_INCREMENT;
+            }
+            xNumerationOffset += YZ_INCREMENT;
+        }
+
+        navigationToGrid = gridToNavigation.Reverse();
+    }
+
+    IEnumerator AStarDebug(Vector3Int from, Vector3Int targetPosition)
+    {
+        List<Vector3Int> result = new();
+        HashSet<Vector3Int> allColoredTiles = new();
+
+        var openPathTiles = new List<TileWalkCost>();
+        var closedPathTiles = new List<TileWalkCost>();
+
+        var navFrom = gridToNavigation[from];
+        var navTarget = gridToNavigation[targetPosition];
+
+        TileWalkCost currentTile = new TileWalkCost(null, navFrom, 0, worldGrid.CalculateDistance(navFrom, navTarget));
+
+        openPathTiles.Add(currentTile);
+
+        while (openPathTiles.Count != 0)
+        {
+            openPathTiles = openPathTiles.OrderBy(x => x.total).ThenByDescending(x => x.costFromOrigin).ToList();
+            currentTile = openPathTiles[0];
+
+            openPathTiles.Remove(currentTile);
+            closedPathTiles.Add(currentTile);
+
+            yield return new WaitForSeconds(0.1f);
+            allColoredTiles.Add(currentTile.tilePosition);
+            colorTileMethod(navigationToGrid[currentTile.tilePosition], Color.red);
+
+            int g = currentTile.costFromOrigin + 1;
+
+            if (currentTile.tilePosition == navTarget)
+            {
+                break;
+            }
+
+            var neighbours = GetNeighbours(currentTile.tilePosition);
+            foreach (var neighbour in neighbours)
+            {
+                yield return new WaitForSeconds(0.1f);
+                TileWalkCost neighbourTile = new TileWalkCost(currentTile, neighbour, g, worldGrid.CalculateDistance(neighbour, navTarget));
+
+                allColoredTiles.Add(neighbour);
+
+                if (closedPathTiles.Contains(neighbourTile))
+                {
+                    continue;
+                }
+                colorTileMethod(navigationToGrid[neighbour], Color.green);
+
+                if (!openPathTiles.Contains(neighbourTile))
+                {
+                    openPathTiles.Add(neighbourTile);
+                }
+                else if(neighbourTile.total > g + neighbourTile.costToTarget)
+                {
+                    neighbourTile.costFromOrigin = g;
+                }
+            }
+        }
+        yield return new WaitForSeconds(1f);
+
+        List<TileWalkCost> finalPathTiles = new List<TileWalkCost>();
+
+        var targetTiles = closedPathTiles.Where(x => x.tilePosition == navTarget).ToList();
+
+        if(targetTiles.Count == 0)
+        {
+            yield break;
+        }
+
+        currentTile = targetTiles[0];
+        colorTileMethod(navigationToGrid[currentTile.tilePosition], Color.blue);
+
+        finalPathTiles.Add(currentTile);
+
+        for (int i = currentTile.costFromOrigin - 1; i >= 0; i--)
+        {
+            var neighbours = GetNeighbours(currentTile.tilePosition);
+            currentTile = closedPathTiles.Find(x => x.costFromOrigin == i && neighbours.Contains(x.tilePosition));
+            finalPathTiles.Add(currentTile);
+            colorTileMethod(navigationToGrid[currentTile.tilePosition], Color.blue);
+            yield return new WaitForSeconds(0.1f);
+        }
+
+        finalPathTiles.Reverse();
+
+        yield return new WaitForSeconds(1f);
+
+        foreach (var tile in allColoredTiles)
+        {
+            colorTileMethod(tile, Color.white);
+        }
     }
 
     private List<Vector3Int> AStar(Vector3Int from, Vector3Int targetPosition)
     {
         List<Vector3Int> result = new();
 
-        var tilesToCheck = new List<TileWalkCost>();
-        var alreadyCheckTiles = new HashSet<TileWalkCost>();
+        var openPathTiles = new List<TileWalkCost>();
+        var closedPathTiles = new List<TileWalkCost>();
 
-        tilesToCheck.Add(new TileWalkCost(null, from, 0, worldGrid.CalculateDistance(from, targetPosition)));
+        var navFrom = gridToNavigation[from];
+        var navTarget = gridToNavigation[targetPosition];
 
-        while(tilesToCheck.Count != 0)
+        TileWalkCost currentTile = new TileWalkCost(null, navFrom, 0, worldGrid.CalculateDistance(navFrom, navTarget));
+
+        openPathTiles.Add(currentTile);
+
+        while (openPathTiles.Count != 0)
         {
-            var currentTile = tilesToCheck[0];
-            foreach (var tile in tilesToCheck)
-            {
-                if (tile.total < currentTile.total)
-                    currentTile = tile;
-            }
-            tilesToCheck.Remove(currentTile);
+            openPathTiles = openPathTiles.OrderBy(x => x.total).ThenByDescending(x => x.costFromOrigin).ToList();
+            currentTile = openPathTiles[0];
 
-            alreadyCheckTiles.Add(currentTile);
+            openPathTiles.Remove(currentTile);
+            closedPathTiles.Add(currentTile);
 
-            if(currentTile.tilePosition == targetPosition)
+            int g = currentTile.costFromOrigin + 1;
+
+            if (currentTile.tilePosition == navTarget)
             {
-                return RetracePath(currentTile);
+                break;
             }
 
-            foreach (var neighbour in GetNeighbours(currentTile.tilePosition))
+            var neighbours = GetNeighbours(currentTile.tilePosition);
+            foreach (var neighbour in neighbours)
             {
-                if(alreadyCheckTiles.Where(x => x.tilePosition == neighbour).Count() > 0)
+                TileWalkCost neighbourTile = new TileWalkCost(currentTile, neighbour, g, worldGrid.CalculateDistance(neighbour, navTarget));
+
+                if (closedPathTiles.Contains(neighbourTile))
                 {
                     continue;
                 }
 
-                var costToNeighbour = worldGrid.CalculateDistance(currentTile.tilePosition, neighbour);
-                var elementToCheck = tilesToCheck.FirstOrDefault(x => x.tilePosition == neighbour);
-                if(elementToCheck == null)
+                if (!openPathTiles.Contains(neighbourTile))
                 {
-                    elementToCheck = new TileWalkCost(currentTile, neighbour, costToNeighbour, worldGrid.CalculateDistance(neighbour, targetPosition));
-                    tilesToCheck.Add(elementToCheck);
-                    continue;
+                    openPathTiles.Add(neighbourTile);
                 }
-
-                if(elementToCheck.costFromOrigin > costToNeighbour)
+                else if (neighbourTile.total > g + neighbourTile.costToTarget)
                 {
-                    elementToCheck.costFromOrigin = costToNeighbour;
-                    elementToCheck.total = costToNeighbour + elementToCheck.costToTarget;
-                    elementToCheck.parentNode = currentTile;
+                    neighbourTile.costFromOrigin = g;
                 }
             }
+        }
+        List<Vector3Int> finalPathTiles = new();
 
+        var targetTiles = closedPathTiles.Where(x => x.tilePosition == navTarget).ToList();
+
+        if (targetTiles.Count == 0)
+        {
+            return finalPathTiles;
         }
 
-        return result;
+        currentTile = targetTiles[0];
+        finalPathTiles.Add(currentTile.tilePosition);
+
+        for (int i = currentTile.costFromOrigin - 1; i >= 0; i--)
+        {
+            var neighbours = GetNeighbours(currentTile.tilePosition);
+            currentTile = closedPathTiles.Find(x => x.costFromOrigin == i && neighbours.Contains(x.tilePosition));
+            finalPathTiles.Add(currentTile.tilePosition);
+        }
+
+        finalPathTiles.Reverse();
+        return finalPathTiles;
     }
 
     private List<Vector3Int> RetracePath(TileWalkCost currentTile)

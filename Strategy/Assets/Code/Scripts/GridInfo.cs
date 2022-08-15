@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Tilemaps;
 
 public interface IGrid
 {
@@ -19,7 +20,6 @@ public class GridInfo : MonoBehaviour, IGrid
         Systems.RegisterSystem<IGrid>(this);
     }
 
-
     public Vector3Int WorldToGrid(Vector3 position)
     {
         var result = grid.WorldToCell(position);
@@ -36,10 +36,6 @@ public class GridInfo : MonoBehaviour, IGrid
 
     public int CalculateDistance(Vector3Int origin, Vector3Int target)
     {
-        origin.z = -origin.x - origin.y;
-        target.z = -target.x - target.y;
-
-        var vec = origin - target;
-        return (Mathf.Abs(vec.x) + Mathf.Abs(vec.y) + Mathf.Abs(vec.z)) / 2;
+        return Mathf.Max(Mathf.Abs(origin.z - target.z), Mathf.Max(Mathf.Abs(origin.x - target.x), Mathf.Abs(origin.y - target.y)));
     }
 }

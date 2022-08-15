@@ -14,6 +14,19 @@ public static class ExtensionMethods
 
         return result;
     }
+
+    public static Dictionary<V, K> Reverse<K, V>(this IDictionary<K, V> dict)
+    {
+        var inverseDict = new Dictionary<V, K>();
+        foreach (var kvp in dict)
+        {
+            if (!inverseDict.ContainsKey(kvp.Value))
+            {
+                inverseDict.Add(kvp.Value, kvp.Key);
+            }
+        }
+        return inverseDict;
+    }
 }
 
 public static class Utils
