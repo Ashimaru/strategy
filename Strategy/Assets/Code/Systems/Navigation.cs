@@ -277,7 +277,7 @@ public class Navigation : MonoBehaviour, INavigation
         {
             var neighbours = GetNeighbours(currentTile.tilePosition);
             currentTile = closedPathTiles.Find(x => x.costFromOrigin == i && neighbours.Contains(x.tilePosition));
-            finalPathTiles.Add(currentTile.tilePosition);
+            finalPathTiles.Add(navigationToGrid[currentTile.tilePosition]);
         }
 
         finalPathTiles.Reverse();
