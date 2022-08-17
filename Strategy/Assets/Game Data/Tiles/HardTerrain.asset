@@ -16,4 +16,4 @@ MonoBehaviour:
   - {fileID: 11400000, guid: e3692378dff4c7e4e8a58c4bc74c15e7, type: 2}
   - {fileID: 11400000, guid: 37da925312717504d99e01aa2df26e4c, type: 2}
   isWalkable: 1
-  walkingCost: 5
+  walkingCost: 3

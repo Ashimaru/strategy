@@ -43,9 +43,10 @@ internal class PathNode : IEquatable<PathNode>
     }
 
 }
-
 public class Navigation : MonoBehaviour, INavigation
 {
+    [SerializeField]
+    private Grid grid;
     [SerializeField]
     private Tilemap baseTilemap;
     [SerializeField]
@@ -55,6 +56,10 @@ public class Navigation : MonoBehaviour, INavigation
 
     private Dictionary<Vector3Int, Vector3Int> gridToNavigation = new Dictionary<Vector3Int, Vector3Int>();
     private Dictionary<Vector3Int, Vector3Int> navigationToGrid = new Dictionary<Vector3Int, Vector3Int>();
+
+
+    private List<Vector3Int> coloredTiles = new();
+    private List<TextMesh> textMeshes = new();
 
     readonly private List<Vector3Int> POSSIBLE_MOVES = new()
     {
@@ -136,7 +141,7 @@ public class Navigation : MonoBehaviour, INavigation
 
         while (openPathTiles.Count != 0)
         {
-            openPathTiles = openPathTiles.OrderBy(x => x.fCost).ThenByDescending(x => x.gCost).ToList();
+            openPathTiles = openPathTiles.OrderBy(x => x.fCost).ThenBy(x => x.gCost).ToList();
             currentTile = openPathTiles[0];
 
             openPathTiles.Remove(currentTile);
@@ -183,7 +188,7 @@ public class Navigation : MonoBehaviour, INavigation
         List<Vector3Int> finalPathTiles = new();
 
         currentTile = closedPathTiles.First(x => x.position == navTarget);
-        
+
         return RetracePath(currentTile);
     }
     private List<Vector3Int> RetracePath(PathNode currentTile)
@@ -208,4 +213,21 @@ public class Navigation : MonoBehaviour, INavigation
         return Mathf.Max(Mathf.Abs(origin.z - target.z), Mathf.Max(Mathf.Abs(origin.x - target.x), Mathf.Abs(origin.y - target.y)));
     }
 
+
+    //-------------- Left for debug purposes ------------------//
+    void ClearTiles()
+    {
+        foreach(var tile in coloredTiles)
+        {
+            baseTilemap.SetTileFlags(tile, TileFlags.None);
+            baseTilemap.SetColor(tile, Color.white);
+        }
+    }
+
+    void ColorTile(Vector3Int coords, Color color)
+    {
+        baseTilemap.SetTileFlags(coords, TileFlags.None);
+        baseTilemap.SetColor(coords, color);
+        coloredTiles.Add(coords);
+    }
 }

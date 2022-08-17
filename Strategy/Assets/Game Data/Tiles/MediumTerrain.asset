@@ -14,10 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   tiles:
   - {fileID: 11400000, guid: 3a4a4c9d6ad7182489a55fba39039409, type: 2}
-  - {fileID: 11400000, guid: 9e35c2be6724d8042b31e4801cecb28d, type: 2}
   - {fileID: 11400000, guid: 3fac9a9e4272172409d2074bcf94283b, type: 2}
   - {fileID: 11400000, guid: 98ccd9bfcf9a8454398caa04468db02d, type: 2}
   - {fileID: 11400000, guid: dcd41b6f83d502a45a3131bf23ca6548, type: 2}
   - {fileID: 11400000, guid: ea5f11b3b19599c42966486bf1659bb2, type: 2}
+  - {fileID: 11400000, guid: 9e35c2be6724d8042b31e4801cecb28d, type: 2}
   isWalkable: 1
-  walkingCost: 3
+  walkingCost: 2

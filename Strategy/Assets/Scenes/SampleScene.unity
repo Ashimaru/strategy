@@ -1480,6 +1480,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 73a471e143cc29840b3d9047e1e03f93, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  grid: {fileID: 1487461106}
   baseTilemap: {fileID: 1957189872}
   tileDatas:
   - {fileID: 11400000, guid: 98cf9bc5d6a410d4c87959e0ce9d6eb6, type: 2}
@@ -2972,7 +2973,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   grid: {fileID: 1487461106}
-  textCanvas: {fileID: 4403112834426567704, guid: af8617ba6c4485743898f0da177c7afd, type: 3}
   tilemap: {fileID: 1957189872}
 --- !u!1 &712667129
 GameObject:
