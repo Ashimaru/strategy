@@ -16,7 +16,7 @@ MonoBehaviour:
   CurrentAssigmentDescription: Standby
   Aligment: 1
   soldiers:
-  - NumberOfMembers: 6
+  - NumberOfMembers: 2
     unitData: {fileID: 11400000, guid: 43567577d19803e45b08351611d0b22e, type: 2}
   - NumberOfMembers: 3
     unitData: {fileID: 11400000, guid: 61bdf31668bbcdc4f8e79b68835aa7ad, type: 2}
