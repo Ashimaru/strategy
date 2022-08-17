@@ -1,0 +1,47 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 862f6b935678e664a9b39922480215d9, type: 3}
+  m_Name: EasyTerrain
+  m_EditorClassIdentifier: 
+  tiles:
+  - {fileID: 11400000, guid: 8088597359389b144b22db1d015223ab, type: 2}
+  - {fileID: 11400000, guid: 0a52b2551e368ae4c8b1d6f72cf833be, type: 2}
+  - {fileID: 11400000, guid: c59405486f590dd48a9f37c1a971ee99, type: 2}
+  - {fileID: 11400000, guid: 8831da0fe8793f04486aa7c4c1d8befe, type: 2}
+  - {fileID: 11400000, guid: a395ba5e3dff0be47b06963bdd7e07f1, type: 2}
+  - {fileID: 11400000, guid: 59947d95c7caa514097f547642f78c64, type: 2}
+  - {fileID: 11400000, guid: fc92c1cea89e68440a1e5e118e399918, type: 2}
+  - {fileID: 11400000, guid: 9d5a9f7b31a902846987a19617a638aa, type: 2}
+  - {fileID: 11400000, guid: 6b9f547552a01fc4f88ee6e8f80bbe67, type: 2}
+  - {fileID: 11400000, guid: f21f89da8b1a41449b04d5fb488153f1, type: 2}
+  - {fileID: 11400000, guid: e8ed177cace210d4586f45b7d0db33fa, type: 2}
+  - {fileID: 11400000, guid: 1a95b57c2b507bb4cbedd8dde94f820d, type: 2}
+  - {fileID: 11400000, guid: 184d00dffecd0494883a203c0bb05fe5, type: 2}
+  - {fileID: 11400000, guid: 783aef4dd108a1041a0e453b18dc9295, type: 2}
+  - {fileID: 11400000, guid: 7abb8c1be6b620441a1ba8bd214339ae, type: 2}
+  - {fileID: 11400000, guid: 2a2668c1e5004f34dbda2916b25a62ff, type: 2}
+  - {fileID: 11400000, guid: 0f034ce2ad38e1f4baedb04a36a42b5e, type: 2}
+  - {fileID: 11400000, guid: 1f821d552af0f664da0aaeef4b215304, type: 2}
+  - {fileID: 11400000, guid: 3c60b906889cd894689997f1013cd0c1, type: 2}
+  - {fileID: 11400000, guid: b7374ff5074dd1c45ba735220a227763, type: 2}
+  - {fileID: 11400000, guid: d4b9571c078d6c34899b5dd357f736df, type: 2}
+  - {fileID: 11400000, guid: 2cbb8cd4e09a2614f8bd9b9ac18effd1, type: 2}
+  - {fileID: 11400000, guid: d546b2342484fa34fa21f255814f1628, type: 2}
+  - {fileID: 11400000, guid: 6a8f13f41d9046741980306d682ec3c3, type: 2}
+  - {fileID: 11400000, guid: 4d8d19506d989ea43a02a4ee2c3b9791, type: 2}
+  - {fileID: 11400000, guid: 198e056906f858949a1dcc75069ec73a, type: 2}
+  - {fileID: 11400000, guid: f8ea67022934fb04ea4973bda050a546, type: 2}
+  - {fileID: 11400000, guid: e08fdc17ebb2db242b08fa3d129a146a, type: 2}
+  - {fileID: 11400000, guid: cea1f3caf7c37dc4087b016c87c51e47, type: 2}
+  - {fileID: 11400000, guid: cbbbaf84877faa04986fd11450d178df, type: 2}
+  isWalkable: 1
+  walkingCost: 1

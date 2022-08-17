@@ -7,26 +7,25 @@ using UnityEngine.Tilemaps;
 
 public interface INavigation
 {
-    List<Vector3Int> GetNeighbours(Vector3Int position);
     List<Vector3Int> NavigateTowards(Vector3Int currentPosition, Vector3Int targetPosition);
 }
 
-internal class TileWalkCost : IEquatable<TileWalkCost>
+internal class PathNode : IEquatable<PathNode>
 {
-    public readonly Vector3Int tilePosition;
+    public readonly Vector3Int position;
 
-    public TileWalkCost parentNode;
-    public int costFromOrigin; //gCost
-    public int costToTarget; //hCost
-    public int total; //fCost
+    public PathNode parentNode;
+    public float gCost;
+    public float hCost;
+    public float fCost;
 
-    public TileWalkCost(TileWalkCost _parentNode, Vector3Int _tilePosition, int _costFromOrigin, int _costToTarget)
+    public PathNode(PathNode _parentNode, Vector3Int _position, float _gCost, float _hCost)
     {
         parentNode = _parentNode;
-        tilePosition = _tilePosition;
-        costFromOrigin = _costFromOrigin;
-        costToTarget = _costToTarget;
-        total = costFromOrigin + costToTarget;
+        position = _position;
+        gCost = _gCost;
+        hCost = _hCost;
+        fCost = gCost + hCost;
     }
 
     public override bool Equals(object obj)
@@ -35,22 +34,24 @@ internal class TileWalkCost : IEquatable<TileWalkCost>
         {
             return false;
         }
-        TileWalkCost otherTile = obj as TileWalkCost;
+        PathNode otherTile = obj as PathNode;
         return otherTile != null ? Equals(otherTile) : false; 
     }
-    public bool Equals(TileWalkCost other)
+    public bool Equals(PathNode other)
     {
-        return tilePosition == other.tilePosition;
+        return position == other.position;
     }
 
 }
 
 public class Navigation : MonoBehaviour, INavigation
 {
-    private IGrid worldGrid;
     [SerializeField]
-    private Tilemap tilemap;
-    private System.Action<Vector3Int, Color> colorTileMethod;
+    private Tilemap baseTilemap;
+    [SerializeField]
+    private List<TileProperties> tileDatas;
+
+    private Dictionary<TileBase, TileProperties> dataFromTiles = new();
 
     private Dictionary<Vector3Int, Vector3Int> gridToNavigation = new Dictionary<Vector3Int, Vector3Int>();
     private Dictionary<Vector3Int, Vector3Int> navigationToGrid = new Dictionary<Vector3Int, Vector3Int>();
@@ -75,13 +76,7 @@ public class Navigation : MonoBehaviour, INavigation
         return AStar(currentPosition, targetPosition);
     }
 
-    public void NavigateTowards(Vector3Int currentPosition, Vector3Int targetPosition, System.Action<Vector3Int, Color> colorTile)
-    {
-        colorTileMethod = colorTile;
-        StartCoroutine(AStarDebug(currentPosition, targetPosition));
-    }
-
-    public List<Vector3Int> GetNeighbours(Vector3Int position)
+    private List<Vector3Int> GetNeighbours(Vector3Int position)
     {
         var possibleMoves = new List<Vector3Int>(POSSIBLE_MOVES);
         for (var index = 0; index < possibleMoves.Count; ++index)
@@ -94,16 +89,22 @@ public class Navigation : MonoBehaviour, INavigation
     private void Awake()
     {
         Systems.RegisterSystem<INavigation>(this);
+
+        foreach (var tileProperties in tileDatas)
+        {
+            foreach (var tile in tileProperties.tiles)
+            {
+                dataFromTiles.Add(tile, tileProperties);
+            }
+        }
     }
 
     private void Start()
     {
-        worldGrid = Systems.Get<IGrid>();
-
-        var xMin = tilemap.cellBounds.xMin;
-        var xMax = tilemap.cellBounds.xMax;
-        var yMin = tilemap.cellBounds.yMin;
-        var yMax = tilemap.cellBounds.yMax;
+        var xMin = baseTilemap.cellBounds.xMin;
+        var xMax = baseTilemap.cellBounds.xMax;
+        var yMin = baseTilemap.cellBounds.yMin;
+        var yMax = baseTilemap.cellBounds.yMax;
         Vector3Int xNumerationOffset = Vector3Int.zero;
         for (int x = xMin; x < xMax; ++x)
         {
@@ -119,132 +120,50 @@ public class Navigation : MonoBehaviour, INavigation
         navigationToGrid = gridToNavigation.Reverse();
     }
 
-    IEnumerator AStarDebug(Vector3Int from, Vector3Int targetPosition)
-    {
-        List<Vector3Int> result = new();
-        HashSet<Vector3Int> allColoredTiles = new();
-
-        var openPathTiles = new List<TileWalkCost>();
-        var closedPathTiles = new List<TileWalkCost>();
-
-        var navFrom = gridToNavigation[from];
-        var navTarget = gridToNavigation[targetPosition];
-
-        TileWalkCost currentTile = new TileWalkCost(null, navFrom, 0, worldGrid.CalculateDistance(navFrom, navTarget));
-
-        openPathTiles.Add(currentTile);
-
-        while (openPathTiles.Count != 0)
-        {
-            openPathTiles = openPathTiles.OrderBy(x => x.total).ThenByDescending(x => x.costFromOrigin).ToList();
-            currentTile = openPathTiles[0];
-
-            openPathTiles.Remove(currentTile);
-            closedPathTiles.Add(currentTile);
-
-            yield return new WaitForSeconds(0.1f);
-            allColoredTiles.Add(currentTile.tilePosition);
-            colorTileMethod(navigationToGrid[currentTile.tilePosition], Color.red);
-
-            int g = currentTile.costFromOrigin + 1;
-
-            if (currentTile.tilePosition == navTarget)
-            {
-                break;
-            }
-
-            var neighbours = GetNeighbours(currentTile.tilePosition);
-            foreach (var neighbour in neighbours)
-            {
-                yield return new WaitForSeconds(0.1f);
-                TileWalkCost neighbourTile = new TileWalkCost(currentTile, neighbour, g, worldGrid.CalculateDistance(neighbour, navTarget));
-
-                allColoredTiles.Add(neighbour);
-
-                if (closedPathTiles.Contains(neighbourTile))
-                {
-                    continue;
-                }
-                colorTileMethod(navigationToGrid[neighbour], Color.green);
-
-                if (!openPathTiles.Contains(neighbourTile))
-                {
-                    openPathTiles.Add(neighbourTile);
-                }
-                else if(neighbourTile.total > g + neighbourTile.costToTarget)
-                {
-                    neighbourTile.costFromOrigin = g;
-                }
-            }
-        }
-        yield return new WaitForSeconds(1f);
-
-        List<TileWalkCost> finalPathTiles = new List<TileWalkCost>();
-
-        var targetTiles = closedPathTiles.Where(x => x.tilePosition == navTarget).ToList();
-
-        if(targetTiles.Count == 0)
-        {
-            yield break;
-        }
-
-        currentTile = targetTiles[0];
-        colorTileMethod(navigationToGrid[currentTile.tilePosition], Color.blue);
-
-        finalPathTiles.Add(currentTile);
-
-        for (int i = currentTile.costFromOrigin - 1; i >= 0; i--)
-        {
-            var neighbours = GetNeighbours(currentTile.tilePosition);
-            currentTile = closedPathTiles.Find(x => x.costFromOrigin == i && neighbours.Contains(x.tilePosition));
-            finalPathTiles.Add(currentTile);
-            colorTileMethod(navigationToGrid[currentTile.tilePosition], Color.blue);
-            yield return new WaitForSeconds(0.1f);
-        }
-
-        finalPathTiles.Reverse();
-
-        yield return new WaitForSeconds(1f);
-
-        foreach (var tile in allColoredTiles)
-        {
-            colorTileMethod(tile, Color.white);
-        }
-    }
-
     private List<Vector3Int> AStar(Vector3Int from, Vector3Int targetPosition)
     {
         List<Vector3Int> result = new();
 
-        var openPathTiles = new List<TileWalkCost>();
-        var closedPathTiles = new List<TileWalkCost>();
+        var openPathTiles = new List<PathNode>();
+        var closedPathTiles = new List<PathNode>();
 
         var navFrom = gridToNavigation[from];
         var navTarget = gridToNavigation[targetPosition];
 
-        TileWalkCost currentTile = new TileWalkCost(null, navFrom, 0, worldGrid.CalculateDistance(navFrom, navTarget));
+        PathNode currentTile = new PathNode(null, navFrom, 0, CalculateDistance(navFrom, navTarget));
 
         openPathTiles.Add(currentTile);
 
         while (openPathTiles.Count != 0)
         {
-            openPathTiles = openPathTiles.OrderBy(x => x.total).ThenByDescending(x => x.costFromOrigin).ToList();
+            openPathTiles = openPathTiles.OrderBy(x => x.fCost).ThenByDescending(x => x.gCost).ToList();
             currentTile = openPathTiles[0];
 
             openPathTiles.Remove(currentTile);
             closedPathTiles.Add(currentTile);
 
-            int g = currentTile.costFromOrigin + 1;
-
-            if (currentTile.tilePosition == navTarget)
+            if (currentTile.position == navTarget)
             {
                 break;
             }
 
-            var neighbours = GetNeighbours(currentTile.tilePosition);
+            var neighbours = GetNeighbours(currentTile.position);
             foreach (var neighbour in neighbours)
             {
-                TileWalkCost neighbourTile = new TileWalkCost(currentTile, neighbour, g, worldGrid.CalculateDistance(neighbour, navTarget));
+                var tileBase = baseTilemap.GetTile(navigationToGrid[neighbour]);
+                if(tileBase == null)
+                {
+                    continue;
+                }
+                var tileProperties = dataFromTiles[tileBase];
+                float g = currentTile.gCost + tileProperties.walkingCost;
+
+                PathNode neighbourTile = new PathNode(currentTile, neighbour, g, CalculateDistance(neighbour, navTarget));
+
+                if (!tileProperties.isWalkable)
+                {
+                    continue;
+                }
 
                 if (closedPathTiles.Contains(neighbourTile))
                 {
@@ -255,33 +174,38 @@ public class Navigation : MonoBehaviour, INavigation
                 {
                     openPathTiles.Add(neighbourTile);
                 }
-                else if (neighbourTile.total > g + neighbourTile.costToTarget)
+                else if (neighbourTile.fCost > g + neighbourTile.hCost)
                 {
-                    neighbourTile.costFromOrigin = g;
+                    neighbourTile.gCost = g;
                 }
             }
         }
         List<Vector3Int> finalPathTiles = new();
 
-        var targetTiles = closedPathTiles.Where(x => x.tilePosition == navTarget).ToList();
-
-        if (targetTiles.Count == 0)
+        currentTile = closedPathTiles.First(x => x.position == navTarget);
+        
+        return RetracePath(currentTile);
+    }
+    private List<Vector3Int> RetracePath(PathNode currentTile)
+    {
+        var result = new List<Vector3Int>();
+        if(currentTile == null)
         {
-            return finalPathTiles;
+            return result;
         }
-
-        currentTile = targetTiles[0];
-        finalPathTiles.Add(currentTile.tilePosition);
-
-        for (int i = currentTile.costFromOrigin - 1; i >= 0; i--)
+        do
         {
-            var neighbours = GetNeighbours(currentTile.tilePosition);
-            currentTile = closedPathTiles.Find(x => x.costFromOrigin == i && neighbours.Contains(x.tilePosition));
-            finalPathTiles.Add(navigationToGrid[currentTile.tilePosition]);
-        }
+            result.Add(navigationToGrid[currentTile.position]);
+            currentTile = currentTile.parentNode;
+        } while (currentTile.parentNode != null);
 
-        finalPathTiles.Reverse();
-        return finalPathTiles;
+        result.Reverse();
+        return result;
+    }
+
+    private int CalculateDistance(Vector3Int origin, Vector3Int target)
+    {
+        return Mathf.Max(Mathf.Abs(origin.z - target.z), Mathf.Max(Mathf.Abs(origin.x - target.x), Mathf.Abs(origin.y - target.y)));
     }
 
 }

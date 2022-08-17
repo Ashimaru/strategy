@@ -1480,7 +1480,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 73a471e143cc29840b3d9047e1e03f93, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tilemap: {fileID: 1957189872}
+  baseTilemap: {fileID: 1957189872}
+  tileDatas:
+  - {fileID: 11400000, guid: 98cf9bc5d6a410d4c87959e0ce9d6eb6, type: 2}
+  - {fileID: 11400000, guid: 3ab97990516999e42bd74a7885ae95a7, type: 2}
+  - {fileID: 11400000, guid: b63bc6b49cbff4e458eb16b5ae29efd7, type: 2}
+  - {fileID: 11400000, guid: 86e4ace772a098c44bec97264acc304b, type: 2}
 --- !u!4 &312855713
 Transform:
   m_ObjectHideFlags: 0
@@ -1512,7 +1517,6 @@ MonoBehaviour:
   navigation: {fileID: 312855712}
   tiles: {fileID: 1957189872}
   selectedScenario: 0
-  DebugMode: 0
 --- !u!114 &312855715
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -40,7 +40,6 @@ public class ClickableTile : MonoBehaviour, IClickableTile
     [SerializeField] private Navigation navigation;
     [SerializeField] private Tilemap tiles;
     [SerializeField] private Scenario selectedScenario;
-    [SerializeField] private bool DebugMode = false;
 
     private List<Vector3Int> path = new();
     private List<Vector3Int> navPoints = new();
@@ -138,16 +137,6 @@ public class ClickableTile : MonoBehaviour, IClickableTile
     {
         var position = GetTilePostionOnGrid();
 
-        //navPoints.Add(position);
-        //if (navPoints.Count == 1)
-        //{
-        //    ColorTile(navPoints[0], Color.white);
-        //    navPoints.Clear();
-        //}
-
-        //ColorTile(position, Color.red);
-
-
         navPoints.Add(position);
         if (navPoints.Count == 1)
         {
@@ -156,17 +145,9 @@ public class ClickableTile : MonoBehaviour, IClickableTile
 
         if (navPoints.Count == 2)
         {
-            if (!DebugMode)
-            {
-                ColorTiles(path, Color.white);
-                path = navigation.NavigateTowards(navPoints[0], navPoints[1]);
-                ColorTiles(path, Color.red);
-            }
-            else
-            {
-                navigation.NavigateTowards(navPoints[0], navPoints[1], ColorTile);
-            }
-            return;
+            ColorTiles(path, Color.white);
+            path = navigation.NavigateTowards(navPoints[0], navPoints[1]);
+            ColorTiles(path, Color.red);
         }
 
         navPoints.Clear();
