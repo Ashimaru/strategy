@@ -284,42 +284,4 @@ public class Navigation : MonoBehaviour, INavigation
         return finalPathTiles;
     }
 
-    private List<Vector3Int> RetracePath(TileWalkCost currentTile)
-    {
-        var result = new List<Vector3Int>();
-        do
-        {
-            result.Add(currentTile.tilePosition);
-            currentTile = currentTile.parentNode;
-        }
-        while (currentTile.parentNode != null);
-        result.Reverse();
-        return result;
-    }
-
-
-    private Tile GetTile(Vector3Int position)
-    {
-        return tilemap.GetTile<Tile>(position);
-    }
-
-    private Vector3Int? CalculateNexStep(Vector3Int currentPosition, Vector3Int targetPosition)
-    {
-        if (currentPosition == targetPosition)
-        {
-            return null;
-        }
-
-        var possibleMoves = GetNeighbours(currentPosition);
-
-        var movesWithDistance = possibleMoves
-            .Select(move => new { Move = move, Distance = worldGrid.CalculateDistance(move, targetPosition) })
-            .OrderBy(x => x.Distance);
-
-        var move = movesWithDistance.ElementAt(0);
-        //Debug.Log("Selected " + move.Move + "with distance " + move.Distance + " from possible moves:\n" + possibleMoves.Stringify());
-        return move.Move;
-    }
-
-
 }

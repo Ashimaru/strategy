@@ -31,13 +31,15 @@ public class MoveOrder : IOrder
     {
         var moves = Systems.Get<INavigation>().NavigateTowards(armyToMove.CurrentPosition, targetPosition);
         armyToMove.CurrentPosition = moves[0];
-        if (moves[0] == targetPosition)
+        Debug.Log($"Current position:{armyToMove.CurrentPosition} target position:{targetPosition}");
+        if (armyToMove.CurrentPosition == targetPosition)
         {
+            Debug.Log("Done with movement");
             armyToMove.army.CurrentAssigmentDescription = "Standby";
             onOrderDone();
             return;
         }
-        Utils.CreateTimer(armyToMove.gameObject, 1f, MoveAndStartTimer);
+        movementTimer = Utils.CreateTimer(armyToMove.gameObject, 1f, MoveAndStartTimer);
     }
 
     public void Cancel()
