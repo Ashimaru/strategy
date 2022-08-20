@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 public class Location : MonoBehaviour, IEnterableTile
 {
@@ -19,17 +17,18 @@ public class Location : MonoBehaviour, IEnterableTile
         Position = Systems.Get<IGrid>().WorldToGrid(transform.position);
         Systems.Get<ITileEnterListenerManager>().RegisterForTileEnter(Position, this);
     }
+
     public void OnArmyEnter(ArmyController army)
     {
-        //Debug.Log($"Testing if {army.army.ArmyName} can enter {LocationData.LocationName} army alingment={army.army.Aligment} city alingment={LocationData.alignment}");
-        if(army.army.Aligment == LocationData.alignment)
-        {
-            if (!ShouldSkipNextArmyEnter)
-            {
-                LocationData.Garrison.AddSoldiers(army.army.soldiers);
-                army.Despawn();
-                ShouldSkipNextArmyEnter = false;
-            }
-        }
+        ////Debug.Log($"Testing if {army.army.ArmyName} can enter {LocationData.LocationName} army alingment={army.army.Aligment} city alingment={LocationData.alignment}");
+        //if(army.army.Aligment == LocationData.alignment)
+        //{
+        //    if (!ShouldSkipNextArmyEnter)
+        //    {
+        //        LocationData.Garrison.AddSoldiers(army.army.soldiers);
+        //        army.Despawn();
+        //        ShouldSkipNextArmyEnter = false;
+        //    }
+        //}
     }
 }

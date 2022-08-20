@@ -120,7 +120,8 @@ public class ClickableTile : MonoBehaviour, IClickableTile
     private void FocusOnTiles()
     {
         var position = GetTilePostionOnGrid();
-        Debug.Log(position);
+        //Debug.Log(position);
+        //Debug.Log(clickableTiles.Stringify());
 
         var possibleTiles = clickableTiles.GetValueOrDefault(position);
         if (possibleTiles == null)

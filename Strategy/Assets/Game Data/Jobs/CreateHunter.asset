@@ -9,12 +9,8 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fd492c0b3a6f2744288b98c78fdce133, type: 3}
-  m_Name: Peasant
+  m_Script: {fileID: 11500000, guid: d7ffbc592c0c61348a92f6e1fdc44b99, type: 3}
+  m_Name: CreateHunter
   m_EditorClassIdentifier: 
-  UnitTypeName_: Peasant
-  UnitType_: 0
-  MeeleAttack_: 1
-  RangedAttack_: 1
-  MaxHP_: 10
-  _creationJob: {fileID: 11400000, guid: 69519915132fed84c95c02f773c069f3, type: 2}
+  _duration: 5
+  _jobCost: 10

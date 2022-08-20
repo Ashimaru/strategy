@@ -11,6 +11,11 @@ public class Job
         OnJobDone = onJobDone;
         OnJobCancelled = onJobCancelled;
     }
+
+    public Job(JobData jobData, Action onJobDone) : this(jobData, onJobDone, () => { })
+    {
+    }
+
     public JobData Data { get; private set; }
     public Action OnJobDone { get; private set; }
     public Action OnJobCancelled { get; private set; }
@@ -103,7 +108,11 @@ public class JobQueue : MonoBehaviour
     private void StartJob(Job job)
     {
         CurrentJob = job;
-        _currentTimer = Utils.CreateTimer(gameObject, job.Data.Duration, OnJobCompleted, (progress, timeLeft) => job.OnProgressUpdate(progress, timeLeft));
+        _currentTimer = Utils.CreateTimer(gameObject, 
+                                job.Data.Duration, 
+                                OnJobCompleted, 
+                                $"Job Queue: waiting until {job.Data.name} is complete", 
+                                (progress, timeLeft) => job.OnProgressUpdate(progress, timeLeft));
         OnQueueChanged?.Invoke();
     }
 

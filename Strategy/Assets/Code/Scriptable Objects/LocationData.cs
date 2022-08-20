@@ -8,4 +8,6 @@ public class LocationData : ScriptableObject
     public string LocationName = "";
     public Alignment alignment;
     public Army Garrison;
+
+    public List<Army> VisitingArmies = new();
 }

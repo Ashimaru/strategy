@@ -20,9 +20,13 @@ public class UnitData : ScriptableObject
     [SerializeField]
     private int MaxHP_;
 
+    [SerializeField]
+    private JobData _creationJob;
+
     public string UnitTypeName { get => UnitTypeName_;}
     public int MeeleAttack { get => MeeleAttack_;}
     public int RangedAttack { get => RangedAttack_;}
     public UnitType UnitType { get => UnitType_; }
     public int MaxHP { get => MaxHP_; } 
+    public JobData CreationJob { get => _creationJob; }
 }

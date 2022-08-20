@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Timer : MonoBehaviour
 {
-
+    public string Name;
     public float TotalTime { get => _totalTime; set
         {
             _totalTime = value;

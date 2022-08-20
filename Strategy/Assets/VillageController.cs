@@ -1,57 +1,199 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 
-[RequireComponent(typeof(Location))]
+
+[RequireComponent(typeof(Location), typeof(JobQueue))]
 public class VillageController : MonoBehaviour
 {
+    private static readonly int requiredNumberOfSoldiersToSendResources = 10;
+    private static readonly int requiredGarrisonStrengthToSendResources = 50;
+
     public Location ParentCity;
     [SerializeField]
     private List<UnitData> _possibleUnits;
+    [SerializeField]
+    private List<JobData> _possibleJobs;
+    [SerializeField]
+    private int _resourcesGeneratedPerJob = 20;
+    [SerializeField]
+    private int _resourcesNeededToSendToCity = 100;
 
-    private Timer _resourceProductionTimer;
     private Location _myLocation;
+    private JobQueue _jobQueue;
     private int _resources = 0;
+
+    private ArmyController huntingGroup;
+
+    private bool shouldSendResourcesToCity = true;
 
     private void Start()
     {
         _myLocation = GetComponent<Location>();
-        _resourceProductionTimer = Utils.CreateRepeatingTimer(gameObject, 5F, GenerateResources);
+        _jobQueue = GetComponent<JobQueue>();
+        DecideNextStep();
     }
 
-    private void GenerateResources()
+    void DecideNextStep()
     {
-        _resources += 10;
-
-        if(_resources > 20)
+        if(IsGarrisonCritical())
         {
-            SendResourcesToCity();
-            _resources = 0;
+            FillupGarrison();
+            return;
         }
 
+        SendResourcesToCity();
+    }
+
+    private void GenerateResources(int resources)
+    {
+        _resources += resources;
+        DecideNextStep();
+    }
+
+    private void AddUnitToGarrison(UnitData unit)
+    {
+        _myLocation.LocationData.Garrison.AddSoldiers(unit, 1);
+        DecideNextStep();
+
+    }
+
+    private void StartResourceProductionJob()
+    {
+        //Debug.Log($"{_myLocation.LocationData.LocationName} is creating resources");
+        _jobQueue.AddToQueue(new Job(GetJobData("VillageGenerateResources"), () => { GenerateResources(_resourcesGeneratedPerJob); }));
+    }
+
+    private void StartUnitCreationJob(UnitData unitToCreate)
+    {
+        Debug.Assert(_resources >= unitToCreate.CreationJob.JobCost);
+        //Debug.Log($"Creating Unit {unitToCreate.UnitTypeName}");
+        _resources -= unitToCreate.CreationJob.JobCost;
+        _jobQueue.AddToQueue(new Job(unitToCreate.CreationJob, () => AddUnitToGarrison(unitToCreate)));
     }
 
 
     private void SendResourcesToCity()
     {
+        if(!shouldSendResourcesToCity)
+        {
+            StartResourceProductionJob();
+            return;
+        }
+
+        if (_resources < _resourcesNeededToSendToCity)
+        {
+            StartResourceProductionJob();
+            return;
+        }
+
+        if (!HasEnoughGarrisonToSendResourcesToCity())
+        {
+            FillupGarrison();
+            return;
+        }
+
         Debug.Log("Sending resources to city.");
-
+        var army = CreateDeliveryGroup();
         _myLocation.ShouldSkipNextArmyEnter = true;
-
-        var army = ScriptableObject.CreateInstance<Army>();
-        army.ArmyName = _myLocation.LocationData.LocationName + "'s transport.";
-        army.Aligment = _myLocation.LocationData.alignment;
-        army.AddSoldiers(new List<SoldierGroup>() {
-           new SoldierGroup{
-               NumberOfMembers = Random.Range(5, 10),
-               unitData = _possibleUnits[0]
-        }});
 
 
         var armyGo = Systems.Get<IArmyFactory>().CreateArmy(army, _myLocation.Position);
-        var armyController = armyGo.GetComponent<ArmyController>();
-        armyController.MoveTo(ParentCity.Position, () => armyController.Wait(3F, () => armyController.MoveTo(_myLocation.Position)));
+        armyGo.name = army.ArmyName;
+        var armyAi = armyGo.AddComponent<AIArmyController>();
+        armyAi.DeliverResourcesToTheCity(_resources, ParentCity, _myLocation);
 
+        shouldSendResourcesToCity = false;
+        Utils.CreateTimer(gameObject, 30f, () => { shouldSendResourcesToCity = true; }, "Send resources to city");
+        StartResourceProductionJob();
+    }
+
+    private Army CreateDeliveryGroup()
+    {
+        var deliveryGroup = ScriptableObject.CreateInstance<Army>();
+        deliveryGroup.ArmyName = _myLocation.LocationData.LocationName + "'s transport";
+        deliveryGroup.Aligment = _myLocation.LocationData.alignment;
+
+        var garrison = _myLocation.LocationData.Garrison;
+        Action addRandomUnitToDeliveryGroup = () =>
+        {
+            var soldierType = garrison.soldiers.RandomElement();
+            deliveryGroup.AddSoldiers(soldierType.unitData, 1);
+            soldierType.NumberOfMembers -= 1;
+            if (soldierType.NumberOfMembers <= 0)
+            {
+                garrison.soldiers.Remove(soldierType);
+            }
+        };
+        for(int i = 0; i < requiredNumberOfSoldiersToSendResources; ++i)
+        {
+            addRandomUnitToDeliveryGroup();
+        }
+
+        while (Utils.CalculateArmyPower(deliveryGroup) < requiredGarrisonStrengthToSendResources)
+        {
+            //Debug.Log($"Delivery group is too weak ({Utils.CalculateArmyPower(deliveryGroup)}) - adding another unit");
+            addRandomUnitToDeliveryGroup();
+        }
+
+        return deliveryGroup;
+    }
+
+    private JobData GetJobData(string jobName)
+    {
+        var result = _possibleJobs.Find(job => job.name == jobName);
+        Debug.Assert(result != null, $"Failed to find job with name {jobName}. Possible jobs:{_possibleJobs.Stringify()}");
+
+        return result;
+    }
+
+    private bool HasEnoughGarrisonToSendResourcesToCity()
+    {
+        int numberOfSoldiers = _myLocation.LocationData.Garrison.CalculateNumberOfSoldiers();
+        if (numberOfSoldiers < requiredNumberOfSoldiersToSendResources)
+        {
+            //Debug.Log($"{_myLocation.LocationData.LocationName}: not enough soldiers to send resources:{numberOfSoldiers}/{requiredNumberOfSoldiersToSendResources}");
+            return false;
+        }
+
+        int garrisonPower = Utils.CalculateArmyPower(_myLocation.LocationData.Garrison);
+
+       if(garrisonPower < requiredGarrisonStrengthToSendResources)
+        {
+            Debug.Log($"{_myLocation.LocationData.LocationName}: garrison is too weak:{garrisonPower}/{requiredGarrisonStrengthToSendResources}");
+            return false;
+        }
+
+        return true;
+    }
+
+    private bool IsGarrisonCritical()
+    {
+        int power = Utils.CalculateArmyPower(_myLocation.LocationData.Garrison);
+        if(power < 20)
+        {
+            //Debug.Log($"{_myLocation.LocationData.LocationName}: garrison is critical ({power}).");
+            return true;
+        }
+        return false;
+    }
+
+    private void FillupGarrison()
+    {
+        var possibleUnitsToCreate = new List<UnitData>(_possibleUnits);
+        possibleUnitsToCreate.RemoveAll(unitData => unitData.CreationJob.JobCost > _resources);
+
+        if(possibleUnitsToCreate.Count == 0)
+        {
+            //Debug.Log($"Not enough resources({_resources}) to create new unit");
+            StartResourceProductionJob();
+            return;
+        }
+
+        var unitToCreate = possibleUnitsToCreate.RandomElement();
+        StartUnitCreationJob(unitToCreate);
+        return;
     }
 }

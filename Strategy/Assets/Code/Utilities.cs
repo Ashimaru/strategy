@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
 public static class ExtensionMethods
@@ -13,6 +14,13 @@ public static class ExtensionMethods
         result += ']';
 
         return result;
+    }
+
+    public static T RandomElement<T>(this IEnumerable<T> enumerable)
+    {
+        Debug.Assert(enumerable.Count() != 0);
+        var index = UnityEngine.Random.Range(0, enumerable.Count());
+        return enumerable.ElementAt(index);
     }
 
     public static Dictionary<V, K> Reverse<K, V>(this IDictionary<K, V> dict)
@@ -31,29 +39,38 @@ public static class ExtensionMethods
 
 public static class Utils
 {
-    public static Timer CreateTimer(GameObject gameObject, float duration, Action callback)
+    public static Timer CreateTimer(GameObject gameObject, float duration, Action callback, string name = "")
     {
         var timer = gameObject.AddComponent<Timer>();
         timer.TotalTime = duration;
         timer.OnTimeElapsed = callback;
+        timer.Name = name;
         return timer;
     }
 
-    public static Timer CreateTimer(GameObject gameObject, float duration, Action callback, Action<float, float> onProgressUpdate)
+    public static Timer CreateTimer(GameObject gameObject, float duration, Action callback, string name, Action<float, float> onProgressUpdate)
     {
-        var timer = gameObject.AddComponent<Timer>();
-        timer.TotalTime = duration;
-        timer.OnTimeElapsed = callback;
+        var timer = CreateTimer(gameObject, duration, callback, name);
         timer.OnProgressUpdate = onProgressUpdate;
         return timer;
     }
 
     public static Timer CreateRepeatingTimer(GameObject gameObject, float duration, Action callback)
     {
-        var timer = gameObject.AddComponent<Timer>();
-        timer.TotalTime = duration;
-        timer.OnTimeElapsed = callback;
+        var timer = CreateTimer(gameObject, duration, callback);
         timer.IsRepeating = true;
         return timer;
+    }
+
+    public static int CalculateArmyPower(Army army)
+    {
+        Func<SoldierGroup, int> calculateUnitsPower = soldierGroup =>
+        {
+            int power = soldierGroup.unitData.MaxHP / 2;
+            power += soldierGroup.unitData.UnitType == UnitType.Melee ? soldierGroup.unitData.MeeleAttack : soldierGroup.unitData.RangedAttack;
+            return power * soldierGroup.NumberOfMembers;
+        };
+
+        return army.soldiers.Sum(calculateUnitsPower);
     }
 }

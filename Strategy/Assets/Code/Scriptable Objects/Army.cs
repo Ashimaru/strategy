@@ -33,14 +33,27 @@ public class Army : ScriptableObject
     {
         foreach (var newSoldierGroup in newSoldiers)
         {
-            var soldierGroupInGarrison = soldiers.FirstOrDefault(currentArmy => currentArmy.unitData.UnitTypeName == newSoldierGroup.unitData.UnitTypeName);
-            if(soldierGroupInGarrison == null)
-            {
-                soldiers.Add(newSoldierGroup);
-                continue;
-            }
-
-            soldierGroupInGarrison.NumberOfMembers += newSoldierGroup.NumberOfMembers;
+            AddSoldiers(newSoldierGroup.unitData, newSoldierGroup.NumberOfMembers);
         }
+    }
+
+    public void AddSoldiers(UnitData unitData, int amount)
+    {
+        var soldierGroupInGarrison = soldiers.FirstOrDefault(currentArmy => currentArmy.unitData.UnitTypeName == unitData.UnitTypeName);
+        if (soldierGroupInGarrison == null)
+        {
+            soldiers.Add(new SoldierGroup { 
+                NumberOfMembers = amount,
+                unitData =  unitData 
+            });
+            return;
+        }
+
+        soldierGroupInGarrison.NumberOfMembers += amount;
+    }
+
+    public int CalculateNumberOfSoldiers()
+    {
+        return soldiers.Sum(group =>  group.NumberOfMembers);
     }
 }

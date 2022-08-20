@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
@@ -15,9 +16,13 @@ public class ArmyController : MonoBehaviour,
     private Vector3Int currentPosition;
     private IOrder currentOrder;
 
-    public Vector3Int CurrentPosition { 
-        get { return currentPosition;  }
-        set {
+    public List<IOrder> OrderQueue { get; private set; } = new();
+
+    public Vector3Int CurrentPosition
+    {
+        get { return currentPosition; }
+        set
+        {
             Systems.Get<IClickableTile>().DeregisterClickableTile(currentPosition, this);
             unitTilemap.SetTile(currentPosition, null);
             currentPosition = value;
@@ -28,31 +33,31 @@ public class ArmyController : MonoBehaviour,
         }
     }
 
+    void Start()
+    {
+        CurrentPosition = Systems.Get<IGrid>().WorldToGrid(transform.position);
+    }
+
     public void MoveTo(Vector3Int targetPosition)
     {
-        MoveTo(targetPosition, () => {
-            Debug.Log("Movement done");
+        MoveTo(targetPosition, () =>
+        {
         });
     }
 
     public void MoveTo(Vector3Int targetPosition, Action onMoveDone)
     {
-        if (targetPosition == CurrentPosition)
-        {
-            return;
-        }
-
-        currentOrder = new MoveOrder(this, targetPosition, onMoveDone);
+        AddOrder(new MoveOrder(this, targetPosition, BuildOrderDoneCallback(onMoveDone)));
     }
 
     public void Wait(float waitingTime)
     {
-        Wait(waitingTime, () => { Debug.Log("Waiting done"); });
+        Wait(waitingTime, () => { });
     }
 
     public void Wait(float waitingTime, Action onWaitDone)
     {
-        currentOrder = new WaitOrder(this, waitingTime, onWaitDone);
+        AddOrder(new WaitOrder(this, waitingTime, BuildOrderDoneCallback(onWaitDone)));
     }
 
     public void OnFocusAcquired()
@@ -74,12 +79,64 @@ public class ArmyController : MonoBehaviour,
 
     public void Despawn()
     {
+        HideArmy();
+        Destroy(gameObject);
+    }
+
+    public void HideArmy()
+    {
         Systems.Get<IClickableTile>().DeregisterClickableTile(currentPosition, this);
         unitTilemap.SetTile(currentPosition, null);
         if (armyViewController.CurrentlyShownArmy == army)
         {
             armyViewController.ClearArmyInfo();
         }
-        Destroy(gameObject);
+    }
+
+    public void RestoreArmy()
+    {
+        Systems.Get<IClickableTile>().RegisterClickableTile(currentPosition, TileType.Unit, this);
+        unitTilemap.SetTile(currentPosition, armyTile);
+    }
+
+    private void AddOrder(IOrder order)
+    {
+        if (currentOrder == null)
+        {
+            //Debug.Log("Starting action since queue is empty");
+            currentOrder = order;
+            currentOrder.Execute();
+            return;
+        }
+        //Debug.Log("Queueing action since queue is not empty");
+        OrderQueue.Add(order);
+    }
+
+    private void CompleteCurrentOrder()
+    {
+        currentOrder = null;
+    }
+
+    private void StartNextOrder()
+    {
+        if (OrderQueue.Count == 0)
+        {
+            //Debug.Log($"{army.ArmyName}: All orders complete nothing to do");
+            return;
+        }
+
+        currentOrder = OrderQueue[0];
+        OrderQueue.RemoveAt(0);
+        currentOrder.Execute();
+    }
+
+    private Action BuildOrderDoneCallback(Action originalCallback)
+    {
+        return () =>
+        {
+            CompleteCurrentOrder();
+            originalCallback();
+            StartNextOrder();
+        };
     }
 }
