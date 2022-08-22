@@ -1,0 +1,50 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 862f6b935678e664a9b39922480215d9, type: 3}
+  m_Name: Roads
+  m_EditorClassIdentifier: 
+  tiles:
+  - {fileID: 11400000, guid: 03031fc8e5c9c2c4294583d55dcb8ae3, type: 2}
+  - {fileID: 11400000, guid: 05b43c306bd9bba49889ec4abbf00fb3, type: 2}
+  - {fileID: 11400000, guid: a3fd60ac758babc4aaa4633fbf6e399c, type: 2}
+  - {fileID: 11400000, guid: 12c178cbab4cd3f458aa009ea27881cb, type: 2}
+  - {fileID: 11400000, guid: beadcaf976a25a241952cead24e0ce8f, type: 2}
+  - {fileID: 11400000, guid: 6aadf01bd2f3b814f8105f0f0aa6bb52, type: 2}
+  - {fileID: 11400000, guid: 809e0bc19b005f640bcecacffb8266eb, type: 2}
+  - {fileID: 11400000, guid: d9843ee2a98908a4c924e0e9bb3d269f, type: 2}
+  - {fileID: 11400000, guid: 40f76634513e44e4ab831f552b47131f, type: 2}
+  - {fileID: 11400000, guid: 154c3bf1894caa54cb91ab850c80edc8, type: 2}
+  - {fileID: 11400000, guid: a5335e59d2e05e9428f11f11f74b09a1, type: 2}
+  - {fileID: 11400000, guid: 2581ec514e77a9a40824b2674f2b86a8, type: 2}
+  - {fileID: 11400000, guid: ccd2b9cd54a9c0b4da98443a11756beb, type: 2}
+  - {fileID: 11400000, guid: 350b71677085f0c4db16557da0b25300, type: 2}
+  - {fileID: 11400000, guid: 9d20b2affd1ba9e458fee8dd7eb7597f, type: 2}
+  - {fileID: 11400000, guid: 79ccb9db21cd6b344b444bbbab0a39b3, type: 2}
+  - {fileID: 11400000, guid: 42b9eda9e30556b4fa6fcb64d5b16323, type: 2}
+  - {fileID: 11400000, guid: 8cdbf06f4affd4b4ab7154a76b452892, type: 2}
+  - {fileID: 11400000, guid: f123f1e1b6949e74895fdfd3fa0a6637, type: 2}
+  - {fileID: 11400000, guid: 9b5c2986a944db445a812789ff4f344b, type: 2}
+  - {fileID: 11400000, guid: 693fa4a7f541ff34789e453730baf852, type: 2}
+  - {fileID: 11400000, guid: 8b2d73813831263439e864ea27cc1b34, type: 2}
+  - {fileID: 11400000, guid: 631460e615e658147aa641945df61ef5, type: 2}
+  - {fileID: 11400000, guid: 8b274658a94e2634a8d98120aafd80e1, type: 2}
+  - {fileID: 11400000, guid: 6fbb2a6264e70974cb08009dd4f1dd88, type: 2}
+  - {fileID: 11400000, guid: 5c5c5d9d2322bd942bbbffad08f6d11d, type: 2}
+  - {fileID: 11400000, guid: f69c0b855a5b4014b8c6ce61fca9d02a, type: 2}
+  - {fileID: 11400000, guid: 23acdee477d678448b87415cdd5f6129, type: 2}
+  - {fileID: 11400000, guid: e90584b312a558e4ca8e15f06d314781, type: 2}
+  - {fileID: 11400000, guid: 4cb083ac0b9669349bdaff69d24b542f, type: 2}
+  - {fileID: 11400000, guid: 75b685f43ec426140a23aefc253cb13f, type: 2}
+  - {fileID: 11400000, guid: fac459139ecbde640ae10400ea8a67f1, type: 2}
+  - {fileID: 11400000, guid: 6840ff5e24de3054bab70549d2ecfa31, type: 2}
+  isWalkable: 1
+  walkingCost: 0.5

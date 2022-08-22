@@ -37,6 +37,12 @@ internal class PathNode : IEquatable<PathNode>
         PathNode otherTile = obj as PathNode;
         return otherTile != null ? Equals(otherTile) : false; 
     }
+
+    public override int GetHashCode()
+    {
+        return position.GetHashCode();
+    }
+
     public bool Equals(PathNode other)
     {
         return position == other.position;
@@ -49,6 +55,8 @@ public class Navigation : MonoBehaviour, INavigation
     private Grid grid;
     [SerializeField]
     private Tilemap baseTilemap;
+    [SerializeField]
+    private Tilemap roads;
     [SerializeField]
     private List<TileProperties> tileDatas;
 
@@ -155,20 +163,15 @@ public class Navigation : MonoBehaviour, INavigation
             var neighbours = GetNeighbours(currentTile.position);
             foreach (var neighbour in neighbours)
             {
-                var tileBase = baseTilemap.GetTile(navigationToGrid[neighbour]);
-                if(tileBase == null)
+                var walkingCost = GetTileWalkingModifier(neighbour);
+                // Skip when out of the grid or tile is not walkable
+                if (walkingCost == null)
                 {
                     continue;
                 }
-                var tileProperties = dataFromTiles[tileBase];
-                float g = currentTile.gCost + tileProperties.walkingCost;
 
+                float g = currentTile.gCost + walkingCost.Value;
                 PathNode neighbourTile = new PathNode(currentTile, neighbour, g, CalculateDistance(neighbour, navTarget));
-
-                if (!tileProperties.isWalkable)
-                {
-                    continue;
-                }
 
                 if (closedPathTiles.Contains(neighbourTile))
                 {
@@ -206,6 +209,28 @@ public class Navigation : MonoBehaviour, INavigation
 
         result.Reverse();
         return result;
+    }
+
+    private float? GetTileWalkingModifier(Vector3Int position)
+    {
+        var gridPosition = navigationToGrid[position];
+        var roadTile = roads.GetTile(gridPosition);
+        if (roadTile != null)
+        {
+            var roadProperties = dataFromTiles[roadTile];
+            return roadProperties.walkingCost;
+        }
+        var tileBase = baseTilemap.GetTile(gridPosition);
+        if (tileBase == null)
+        {
+            return null;
+        }
+        var tileProperties = dataFromTiles[tileBase];
+        if (!tileProperties.isWalkable)
+        {
+            return null;
+        }
+        return tileProperties.walkingCost;
     }
 
     private int CalculateDistance(Vector3Int origin, Vector3Int target)
