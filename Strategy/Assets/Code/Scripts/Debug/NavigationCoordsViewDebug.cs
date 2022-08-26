@@ -28,9 +28,9 @@ public class NavigationCoordsViewDebug : MonoBehaviour
             var yNumerationOffset = Vector3Int.zero;
             for (int y = yMin; y < yMax; ++y)
             {
-                var worldPos = grid.CellToWorld(new Vector3Int(x, y, 9));
+                var worldPos = grid.CellToWorld(new Vector3Int(x, y, 0));
                 var currentNodeNumeration = xNumerationOffset + yNumerationOffset;
-                DebugUtils.CreateWorldText("(" + (x - xMin).ToString() + ", " + (y - yMin).ToString() + ")\n(" + currentNodeNumeration.x + ", " + currentNodeNumeration.y + ", " + currentNodeNumeration.z + ")", null, worldPos, 125);
+                DebugUtils.CreateWorldText("(" + (x - xMin).ToString() + ", " + (y - yMin).ToString() + ")\n(" + currentNodeNumeration.x + ", " + currentNodeNumeration.y + ", " + currentNodeNumeration.z + ")", transform, worldPos, 125);
                 yNumerationOffset += y % 2 != 0 ? XY_INCREMENT : XZ_INCREMENT;
             }
             xNumerationOffset += YZ_INCREMENT;

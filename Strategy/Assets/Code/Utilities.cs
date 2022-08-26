@@ -1,6 +1,6 @@
 ﻿using System;
-using System.Linq;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 public static class ExtensionMethods
 {
@@ -39,7 +39,7 @@ public static class ExtensionMethods
 
 public static class Utils
 {
-    public static Timer CreateTimer(GameObject gameObject, float duration, Action callback, string name = "")
+    public static Timer CreateTimer(GameObject gameObject, float duration, Action callback, string name)
     {
         var timer = gameObject.AddComponent<Timer>();
         timer.TotalTime = duration;
@@ -55,22 +55,10 @@ public static class Utils
         return timer;
     }
 
-    public static Timer CreateRepeatingTimer(GameObject gameObject, float duration, Action callback)
+    public static Timer CreateRepeatingTimer(GameObject gameObject, float duration, Action callback, string name)
     {
-        var timer = CreateTimer(gameObject, duration, callback);
+        var timer = CreateTimer(gameObject, duration, callback, name);
         timer.IsRepeating = true;
         return timer;
-    }
-
-    public static int CalculateArmyPower(Army army)
-    {
-        Func<SoldierGroup, int> calculateUnitsPower = soldierGroup =>
-        {
-            int power = soldierGroup.unitData.MaxHP / 2;
-            power += soldierGroup.unitData.UnitType == UnitType.Melee ? soldierGroup.unitData.MeeleAttack : soldierGroup.unitData.RangedAttack;
-            return power * soldierGroup.NumberOfMembers;
-        };
-
-        return army.soldiers.Sum(calculateUnitsPower);
     }
 }

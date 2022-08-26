@@ -31,12 +31,12 @@ public class MoveOrder : IOrder
         //Debug.Log($"Current position:{armyToMove.CurrentPosition} target position:{targetPosition}");
         if (armyToMove.CurrentPosition == targetPosition)
         {
-            Debug.Log($"{armyToMove.name}: Done with movement");
+            //Debug.Log($"{armyToMove.name}: Done with movement");
             armyToMove.army.CurrentAssigmentDescription = "Standby";
             onOrderDone();
             return;
         }
-        movementTimer = Utils.CreateTimer(armyToMove.gameObject, 1f, MoveAndStartTimer);
+        movementTimer = Utils.CreateTimer(armyToMove.gameObject, 1f, MoveAndStartTimer, "Next move timer");
     }
 
     public void Cancel()
@@ -55,7 +55,7 @@ public class MoveOrder : IOrder
         originPosition = armyToMove.CurrentPosition;
         if (targetPosition == originPosition)
         {
-            Debug.Log("Done with movement");
+            //Debug.Log("Done with movement");
             armyToMove.army.CurrentAssigmentDescription = "Standby";
             onOrderDone();
             return;
@@ -63,7 +63,7 @@ public class MoveOrder : IOrder
 
 
         armyToMove.army.CurrentAssigmentDescription = GetOrderDescription();
-        movementTimer = Utils.CreateTimer(armyToMove.gameObject, 1f, MoveAndStartTimer);
+        movementTimer = Utils.CreateTimer(armyToMove.gameObject, 1f, MoveAndStartTimer, "Next move timer");
     }
 }
 
@@ -82,7 +82,7 @@ public class WaitOrder : IOrder
 
     public void Execute()
     {
-        _timer = Utils.CreateTimer(_army.gameObject, _timeToWait, OnWaitDone);
+        _timer = Utils.CreateTimer(_army.gameObject, _timeToWait, OnWaitDone, "Waiting at location");
     }
 
     public void Cancel()
@@ -97,7 +97,7 @@ public class WaitOrder : IOrder
 
     private void OnWaitDone()
     {
-        Debug.Log($"{_army.name}: Waiting done");
+        //Debug.Log($"{_army.name}: Waiting done");
         _onOrderCompleted();
     }
 }

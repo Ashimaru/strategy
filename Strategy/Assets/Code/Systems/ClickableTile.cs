@@ -20,7 +20,8 @@ public interface IClickableTile
 public enum Scenario
 {
     TestNav,
-    FocusOnTiles
+    FocusOnTiles,
+    ShowCoordinates
 }
 
 public class ClickableTile : MonoBehaviour, IClickableTile
@@ -110,6 +111,9 @@ public class ClickableTile : MonoBehaviour, IClickableTile
                 break;
             case Scenario.FocusOnTiles:
                 FocusOnTiles();
+                break;
+            case Scenario.ShowCoordinates:
+                Debug.Log(GetTilePostionOnGrid());
                 break;
             default:
                 Debug.Assert(false);

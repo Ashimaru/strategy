@@ -1,14 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.Tilemaps;
 
 interface IArmyFactory
 {
     GameObject CreateArmy(Army army, Vector3Int position);
+    GameObject CreateAIArmy(Army army, Vector3Int position);
 }
 
 class ArmyFactory : MonoBehaviour, IArmyFactory
@@ -30,6 +26,7 @@ class ArmyFactory : MonoBehaviour, IArmyFactory
     public GameObject CreateArmy(Army army, Vector3Int position)
     {
         var armyInstance = Instantiate(armyPrefab);
+        armyInstance.name = army.ArmyName;
         var armyController = armyInstance.GetComponent<ArmyController>();
         armyController.army = army;
         armyController.armyViewController = armyViewController;
@@ -38,6 +35,13 @@ class ArmyFactory : MonoBehaviour, IArmyFactory
         armyController.CurrentPosition = position;
 
         return armyInstance;
+    }
+
+    public GameObject CreateAIArmy(Army army, Vector3Int position)
+    {
+        var armyGo = CreateArmy(army, position);
+        armyGo.AddComponent<AIArmyController>();
+        return armyGo;
     }
 }
 

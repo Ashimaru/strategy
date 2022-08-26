@@ -11,6 +11,8 @@ GameObject:
   - component: {fileID: 4704027430877450334}
   - component: {fileID: 4704027430877450329}
   - component: {fileID: 4704027430877450328}
+  - component: {fileID: 6571466026076748071}
+  - component: {fileID: 5448140407454805801}
   m_Layer: 0
   m_Name: Village
   m_TagString: Untagged
@@ -48,6 +50,9 @@ MonoBehaviour:
   ParentCity: {fileID: 0}
   _possibleUnits:
   - {fileID: 11400000, guid: 43567577d19803e45b08351611d0b22e, type: 2}
+  _possibleJobs: []
+  _resourcesGeneratedPerJob: 20
+  _resourcesNeededToSendToCity: 100
 --- !u!114 &4704027430877450328
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -61,3 +66,30 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _locationData: {fileID: 0}
+--- !u!114 &6571466026076748071
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4704027430877450331}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9e6f187b233285c408d8f326aca28289, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _maxSize: 10
+--- !u!114 &5448140407454805801
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4704027430877450331}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a2f32dab5c5c730489625d378d473a71, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _possiblePatrols: []
+  _timeForNextPatrolToBeSent: 60

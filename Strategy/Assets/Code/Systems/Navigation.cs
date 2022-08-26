@@ -133,6 +133,15 @@ public class Navigation : MonoBehaviour, INavigation
         navigationToGrid = gridToNavigation.Reverse();
     }
 
+    private void OnDrawGizmos()
+    {
+        Vector3 size = new(0.2F, 0.2F, 0.2F);
+        foreach(var entry in gridToNavigation.Keys)
+        {
+            Gizmos.DrawCube(grid.CellToWorld(entry), size);
+        }
+    }
+
     private List<Vector3Int> AStar(Vector3Int from, Vector3Int targetPosition)
     {
         List<Vector3Int> result = new();

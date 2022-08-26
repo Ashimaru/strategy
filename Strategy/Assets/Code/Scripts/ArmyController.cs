@@ -79,6 +79,7 @@ public class ArmyController : MonoBehaviour,
 
     public void Despawn()
     {
+        Debug.Log($"Despawning {army.ArmyName}");
         HideArmy();
         Destroy(gameObject);
     }

@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 [RequireComponent(typeof(ArmyController))]
@@ -33,4 +34,17 @@ public class AIArmyController : MonoBehaviour
         location.LocationData.Garrison.AddSoldiers(armyController.army.soldiers);
         armyController.Despawn();
     }
+
+    internal void ExecutePatrol(Location sourceLocation, PatrolPath path)
+    {
+        //Debug.Log($"{armyController.army.ArmyName} starts patrol route {path.patrolName}");
+
+        foreach(var checkpoint in path.checkpoints)
+        {
+            armyController.MoveTo(checkpoint.position);
+            armyController.Wait(checkpoint.timeToWait);
+        }
+
+        armyController.MoveTo(sourceLocation.Position, () => JoinGarrison(sourceLocation));
+     }
 }

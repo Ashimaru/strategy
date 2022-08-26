@@ -125,8 +125,8 @@ public class BattleController : MonoBehaviour
         Attack(_attackingArmyData, _defendingArmyData);
         Attack(_defendingArmyData, _attackingArmyData);
 
-        _attackingArmyAttackTimer = Utils.CreateRepeatingTimer(gameObject, 1, () => Attack(_attackingArmyData, _defendingArmyData));
-        _defendingArmyAttackTimer = Utils.CreateRepeatingTimer(gameObject, 1.1F, () => Attack(_defendingArmyData, _attackingArmyData));
+        _attackingArmyAttackTimer = Utils.CreateRepeatingTimer(gameObject, 1, () => Attack(_attackingArmyData, _defendingArmyData), $"{_attackingArmyData.Army.ArmyName} attack timer");
+        _defendingArmyAttackTimer = Utils.CreateRepeatingTimer(gameObject, 1.1F, () => Attack(_defendingArmyData, _attackingArmyData), $"{_defendingArmyData.Army.ArmyName} attack timer");
     }
 
     private void Attack(ArmyData attackingArmy, ArmyData defendingArmy)

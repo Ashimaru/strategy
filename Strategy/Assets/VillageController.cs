@@ -1,5 +1,3 @@
-using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -24,8 +22,6 @@ public class VillageController : MonoBehaviour
     private Location _myLocation;
     private JobQueue _jobQueue;
     private int _resources = 0;
-
-    private ArmyController huntingGroup;
 
     private bool shouldSendResourcesToCity = true;
 
@@ -95,14 +91,13 @@ public class VillageController : MonoBehaviour
             return;
         }
 
-        Debug.Log("Sending resources to city.");
+        //Debug.Log("Sending resources to city.");
         var army = CreateDeliveryGroup();
         _myLocation.ShouldSkipNextArmyEnter = true;
 
 
-        var armyGo = Systems.Get<IArmyFactory>().CreateArmy(army, _myLocation.Position);
-        armyGo.name = army.ArmyName;
-        var armyAi = armyGo.AddComponent<AIArmyController>();
+        var armyGo = Systems.Get<IArmyFactory>().CreateAIArmy(army, _myLocation.Position);
+        var armyAi = armyGo.GetComponent<AIArmyController>();
         armyAi.DeliverResourcesToTheCity(_resources, ParentCity, _myLocation);
 
         shouldSendResourcesToCity = false;
@@ -112,32 +107,11 @@ public class VillageController : MonoBehaviour
 
     private Army CreateDeliveryGroup()
     {
-        var deliveryGroup = ScriptableObject.CreateInstance<Army>();
+        var deliveryGroup = Army.CreateGroupFromArmy(_myLocation.LocationData.Garrison,
+                                            requiredNumberOfSoldiersToSendResources,
+                                            requiredGarrisonStrengthToSendResources);
         deliveryGroup.ArmyName = _myLocation.LocationData.LocationName + "'s transport";
         deliveryGroup.Aligment = _myLocation.LocationData.alignment;
-
-        var garrison = _myLocation.LocationData.Garrison;
-        Action addRandomUnitToDeliveryGroup = () =>
-        {
-            var soldierType = garrison.soldiers.RandomElement();
-            deliveryGroup.AddSoldiers(soldierType.unitData, 1);
-            soldierType.NumberOfMembers -= 1;
-            if (soldierType.NumberOfMembers <= 0)
-            {
-                garrison.soldiers.Remove(soldierType);
-            }
-        };
-        for(int i = 0; i < requiredNumberOfSoldiersToSendResources; ++i)
-        {
-            addRandomUnitToDeliveryGroup();
-        }
-
-        while (Utils.CalculateArmyPower(deliveryGroup) < requiredGarrisonStrengthToSendResources)
-        {
-            //Debug.Log($"Delivery group is too weak ({Utils.CalculateArmyPower(deliveryGroup)}) - adding another unit");
-            addRandomUnitToDeliveryGroup();
-        }
-
         return deliveryGroup;
     }
 
@@ -151,14 +125,14 @@ public class VillageController : MonoBehaviour
 
     private bool HasEnoughGarrisonToSendResourcesToCity()
     {
-        int numberOfSoldiers = _myLocation.LocationData.Garrison.CalculateNumberOfSoldiers();
+        int numberOfSoldiers = _myLocation.LocationData.Garrison.Size;
         if (numberOfSoldiers < requiredNumberOfSoldiersToSendResources)
         {
             //Debug.Log($"{_myLocation.LocationData.LocationName}: not enough soldiers to send resources:{numberOfSoldiers}/{requiredNumberOfSoldiersToSendResources}");
             return false;
         }
 
-        int garrisonPower = Utils.CalculateArmyPower(_myLocation.LocationData.Garrison);
+        int garrisonPower = _myLocation.LocationData.Garrison.Power;
 
        if(garrisonPower < requiredGarrisonStrengthToSendResources)
         {
@@ -171,8 +145,8 @@ public class VillageController : MonoBehaviour
 
     private bool IsGarrisonCritical()
     {
-        int power = Utils.CalculateArmyPower(_myLocation.LocationData.Garrison);
-        if(power < 20)
+        int power = _myLocation.LocationData.Garrison.Power;
+        if (power < 20)
         {
             //Debug.Log($"{_myLocation.LocationData.LocationName}: garrison is critical ({power}).");
             return true;
