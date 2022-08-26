@@ -1483,7 +1483,6 @@ MonoBehaviour:
   grid: {fileID: 1487461106}
   baseTilemap: {fileID: 1957189872}
   roads: {fileID: 1620924789}
-  something: {fileID: 0}
   tileDatas:
   - {fileID: 11400000, guid: 98cf9bc5d6a410d4c87959e0ce9d6eb6, type: 2}
   - {fileID: 11400000, guid: 3ab97990516999e42bd74a7885ae95a7, type: 2}
@@ -2339,6 +2338,7 @@ GameObject:
   - component: {fileID: 519420031}
   - component: {fileID: 519420029}
   - component: {fileID: 519420033}
+  - component: {fileID: 519420034}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -2427,6 +2427,18 @@ MonoBehaviour:
   minZoom: 4
   maxZoom: 8
   zoomSpeed: 0.3
+--- !u!114 &519420034
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 519420028}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c7c67d5baee3db40a4ade5302f6d3ba, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &545205090
 GameObject:
   m_ObjectHideFlags: 0
