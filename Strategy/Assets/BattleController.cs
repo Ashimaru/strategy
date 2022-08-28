@@ -153,7 +153,7 @@ public class BattleController : MonoBehaviour
         var numberOfMeeleUnitsInDefendingArmy = meeleGroupsInDefendingArmy.Sum(group => group.Group.NumberOfMembers);
         var numberOfRangedUnitsInDefendingArmy = rangedGroupsInDefendingArmy.Sum(group => group.Group.NumberOfMembers);
 
-        var totalDamage = CalculateDamage(meeleGroupsInAttackingArmy, group => group.Group.unitData.MeeleAttack);
+        var totalDamage = CalculateDamage(meeleGroupsInAttackingArmy);
         Debug.LogFormat("Total damage dealt {0}", totalDamage);
         battleEntry.TotalDamage += totalDamage;
 
@@ -215,7 +215,7 @@ public class BattleController : MonoBehaviour
             return;
         }
 
-        var totalDamage = CalculateDamage(rangedUnitsInAttackingArmy, group => group.Group.unitData.RangedAttack);
+        var totalDamage = CalculateDamage(rangedUnitsInAttackingArmy);
         Debug.LogFormat("Total damage dealt {0}", totalDamage);
         battleEntry.TotalDamage += totalDamage;
         var damageForEachDefendingGroup = Mathf.CeilToInt((float)totalDamage / defendingArmy.Groups.Count());
@@ -241,9 +241,9 @@ public class BattleController : MonoBehaviour
         return armyGroups.Where(group => group.Group.unitData.UnitType == unitType);
     }
 
-    private int CalculateDamage(IEnumerable<BattleGroup> battleGroups, Func<BattleGroup, int> attackStatAccessor)
+    private int CalculateDamage(IEnumerable<BattleGroup> battleGroups)
     {
-        return battleGroups.Sum(group => attackStatAccessor(group) * group.Group.NumberOfMembers);
+        return battleGroups.Sum(group => group.Group.unitData.Attack * group.Group.NumberOfMembers);
     }
 
     private List<BattleGroup> ApplyDamage(IEnumerable<BattleGroup> damageReceivingGroups, int amountOfDamage, BattleEntry battleEntry)

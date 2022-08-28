@@ -6,7 +6,7 @@ public enum UnitType
     Ranged
 }
 
-[CreateAssetMenu(fileName = "UnitData", menuName ="Game/UnitType")]
+[CreateAssetMenu(fileName = "UnitData", menuName = "Game/UnitType")]
 public class UnitData : ScriptableObject
 {
     [SerializeField]
@@ -14,19 +14,16 @@ public class UnitData : ScriptableObject
     [SerializeField]
     private UnitType UnitType_;
     [SerializeField]
-    private int MeeleAttack_;
-    [SerializeField]
-    private int RangedAttack_;
+    private int Attack_;
     [SerializeField]
     private int MaxHP_;
 
     [SerializeField]
     private JobData _creationJob;
 
-    public string UnitTypeName { get => UnitTypeName_;}
-    public int MeeleAttack { get => MeeleAttack_;}
-    public int RangedAttack { get => RangedAttack_;}
+    public string UnitTypeName { get => UnitTypeName_; }
+    public int Attack { get => Attack_; }
     public UnitType UnitType { get => UnitType_; }
-    public int MaxHP { get => MaxHP_; } 
+    public int MaxHP { get => MaxHP_; }
     public JobData CreationJob { get => _creationJob; }
 }

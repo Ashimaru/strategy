@@ -14,7 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   UnitTypeName_: Hunter
   UnitType_: 1
-  MeeleAttack_: 0
-  RangedAttack_: 3
+  Attack_: 3
   MaxHP_: 5
   _creationJob: {fileID: 11400000, guid: 16a1e2324d2ec3e42b1365528ac2e338, type: 2}

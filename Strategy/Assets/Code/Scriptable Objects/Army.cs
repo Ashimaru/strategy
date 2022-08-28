@@ -103,7 +103,7 @@ public class Army : ScriptableObject
         Func<SoldierGroup, int> calculateUnitsPower = soldierGroup =>
         {
             int power = soldierGroup.unitData.MaxHP / 2;
-            power += soldierGroup.unitData.UnitType == UnitType.Melee ? soldierGroup.unitData.MeeleAttack : soldierGroup.unitData.RangedAttack;
+            power += soldierGroup.unitData.Attack;
             return power * soldierGroup.NumberOfMembers;
         };
 
