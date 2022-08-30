@@ -1,0 +1,11 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
+    <Style src="project://database/Assets/UI/MainMenu/MainMenuButton.uss?fileID=7433441132597879392&amp;guid=4e5af1928402709418ed3349ba91ee3b&amp;type=3#MainMenuButton" />
+    <ui:VisualElement name="screen" style="flex-direction: row; flex-grow: 1;">
+        <ui:VisualElement name="button-bar" style="justify-content: center;">
+            <ui:Button text="Save Game" display-tooltip-when-elided="true" name="save-game" class="main-menu-button" />
+            <ui:Button text="Load Game" display-tooltip-when-elided="true" name="load-game" class="main-menu-button" />
+            <ui:Button text="Quit to Main Menu" display-tooltip-when-elided="true" name="quit-to-main-menu" class="main-menu-button" />
+            <ui:Button text="Quit to Desktop" display-tooltip-when-elided="true" name="quit-to-desktop" class="main-menu-button" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

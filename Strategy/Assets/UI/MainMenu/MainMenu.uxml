@@ -1,7 +1,8 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
     <Style src="project://database/Assets/UI/MainMenu/MainMenuButton.uss?fileID=7433441132597879392&amp;guid=4e5af1928402709418ed3349ba91ee3b&amp;type=3#MainMenuButton" />
+    <Style src="project://database/Assets/UI/MainMenu/PanelBackground.uss?fileID=7433441132597879392&amp;guid=f96b58a3c1d062740ae2b8bcebf921bf&amp;type=3#PanelBackground" />
     <ui:VisualElement name="screen" style="height: 1080px; width: 1920px; justify-content: center; align-items: stretch; opacity: 1; position: relative; background-image: url(&apos;project://database/Assets/UI/MainMenu/MainMenuBackground.png?fileID=2800000&amp;guid=a3ff41086b4092b4fbe7032456af76c2&amp;type=3#MainMenuBackground&apos;); flex-grow: 1; flex-direction: row;">
-        <ui:VisualElement name="center" style="justify-content: center; min-width: 400px; align-items: center;">
+        <ui:VisualElement name="center" class="panel-background" style="justify-content: center; min-width: 400px; align-items: center;">
             <ui:Button text="New Game" display-tooltip-when-elided="true" name="new-game" class="main-menu-button" />
             <ui:Button text="Load Game" display-tooltip-when-elided="true" name="load-game" class="main-menu-button" />
             <ui:Button text="Quit Game" display-tooltip-when-elided="true" name="quit-game" class="main-menu-button" />

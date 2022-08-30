@@ -1,0 +1,17 @@
+.round-button {
+    border-left-color: rgba(152, 152, 152, 255);
+    border-right-color: rgba(152, 152, 152, 255);
+    border-top-color: rgba(152, 152, 152, 255);
+    border-bottom-color: rgba(152, 152, 152, 255);
+}
+
+.round-button:hover {
+    border-left-color: rgba(255, 255, 255, 255);
+    border-right-color: rgba(255, 255, 255, 255);
+    border-top-color: rgba(255, 255, 255, 255);
+    border-bottom-color: rgba(255, 255, 255, 255);
+}
+
+.round-button:active {
+    background-color: rgba(99, 99, 99, 255);
+}
