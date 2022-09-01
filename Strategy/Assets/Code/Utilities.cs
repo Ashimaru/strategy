@@ -62,3 +62,23 @@ public static class Utils
         return timer;
     }
 }
+
+
+public static class Serialization
+{
+    public static float[] ToSerializable(Vector3 vector)
+    {
+        float[] result = new float[3] { vector.x, vector.y, vector.z };
+        return result;
+    }
+
+    public static Vector3 ToVector3(float[] vector)
+    {
+        if(vector.Length == 3)
+        {
+            return new Vector3(vector[0], vector[1], vector[2]);
+        }
+        Debug.LogWarning("Passed non 3 dimensional array to be converted to Vector3");
+        return Vector3.zero;
+    }
+}

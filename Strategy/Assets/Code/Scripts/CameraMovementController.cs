@@ -1,8 +1,7 @@
-using System.Collections;
-using System.Collections.Generic;
+using SaveSystem;
 using UnityEngine;
 
-public class CameraMovementController : MonoBehaviour
+public class CameraMovementController : MonoBehaviour, SaveSystem.ISaveable
 {
     private Vector3 origin;
     private Vector3 difference;
@@ -11,6 +10,11 @@ public class CameraMovementController : MonoBehaviour
 
     [SerializeField]
     private float scrollSpeed = 15;
+
+    private void Awake()
+    {
+        Debug.Log(this.GetInstanceID());
+    }
 
     void LateUpdate()
     {
@@ -51,5 +55,30 @@ public class CameraMovementController : MonoBehaviour
             direction.Normalize();
             Camera.main.transform.position += direction * Time.deltaTime * scrollSpeed;
         }
+    }
+
+    [System.Serializable]
+    public class SaveData
+    {
+        public float[] position;
+
+        public SaveData()
+        {
+            position = new float[3] { 0.0f, 0.0f, -10.0f };
+        }
+    }
+
+    public object SaveState()
+    {
+        return new SaveData()
+        {
+            position = Serialization.ToSerializable(transform.position)
+        };
+    }
+
+    public void LoadState(object savedState)
+    {
+        var saveData = (SaveData)savedState;
+        transform.position = Serialization.ToVector3(saveData.position);
     }
 }

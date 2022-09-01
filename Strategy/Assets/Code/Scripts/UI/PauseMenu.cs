@@ -25,11 +25,15 @@ public class PauseMenu : MonoBehaviour
     private void SaveGame()
     {
         Debug.Log("Save Game");
+        var saveSystem = Systems.Get<SaveSystem.ISaveSystem>();
+        saveSystem.SaveGame("");
     }
 
     private void LoadGame()
     {
         Debug.Log("Load Game");
+        var saveSystem = Systems.Get<SaveSystem.ISaveSystem>();
+        saveSystem.LoadGame();
     }
 
     private void QuitToMainMenu()
