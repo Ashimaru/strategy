@@ -11,11 +11,6 @@ public class CameraMovementController : MonoBehaviour, SaveSystem.ISaveable
     [SerializeField]
     private float scrollSpeed = 15;
 
-    private void Awake()
-    {
-        Debug.Log(this.GetInstanceID());
-    }
-
     void LateUpdate()
     {
         if (DragCamera())

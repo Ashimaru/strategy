@@ -11,7 +11,6 @@ public class ZoomController : MonoBehaviour, SaveSystem.ISaveable
 
     void Awake()
     {
-        Debug.Log(this.GetInstanceID());
         _camera = GetComponent<Camera>();
     }
 

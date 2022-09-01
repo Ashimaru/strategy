@@ -6,6 +6,11 @@ public class PauseMenu : MonoBehaviour
 {
     [SerializeField]
     private string mainMenuSceneName;
+    [SerializeField]
+    private GameObject loadGameScreen;
+    [SerializeField]
+    private GameObject saveGameScreen;
+
 
     private void Awake()
     {
@@ -25,15 +30,13 @@ public class PauseMenu : MonoBehaviour
     private void SaveGame()
     {
         Debug.Log("Save Game");
-        var saveSystem = Systems.Get<SaveSystem.ISaveSystem>();
-        saveSystem.SaveGame("");
+        saveGameScreen.SetActive(true);
     }
 
     private void LoadGame()
     {
         Debug.Log("Load Game");
-        var saveSystem = Systems.Get<SaveSystem.ISaveSystem>();
-        saveSystem.LoadGame();
+        loadGameScreen.SetActive(true);
     }
 
     private void QuitToMainMenu()

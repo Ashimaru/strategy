@@ -9,7 +9,7 @@ namespace SaveSystem
     {
         public void SaveGame(string fileName);
 
-        public void LoadGame();
+        public void LoadGame(string fileName);
     }
 
     public class SaveManager : MonoBehaviour, ISaveSystem
@@ -25,12 +25,12 @@ namespace SaveSystem
         {
             var state = new Dictionary<string, object>();
             SaveState(ref state);
-            FileHandler.SaveGame(state, "save.sav");
+            FileHandler.SaveGame(state, fileName);
         }
 
-        public void LoadGame()
+        public void LoadGame(string fileName)
         {
-            var state = FileHandler.LoadGame("save.sav");
+            var state = FileHandler.LoadGame(fileName);
             LoadState(state);
         }
 
