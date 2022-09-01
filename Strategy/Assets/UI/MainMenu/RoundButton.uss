@@ -1,17 +1,26 @@
 .round-button {
-    border-left-color: rgba(152, 152, 152, 255);
-    border-right-color: rgba(152, 152, 152, 255);
-    border-top-color: rgba(152, 152, 152, 255);
-    border-bottom-color: rgba(152, 152, 152, 255);
+    border-left-color: rgb(152, 152, 152);
+    border-right-color: rgb(152, 152, 152);
+    border-top-color: rgb(152, 152, 152);
+    border-bottom-color: rgb(152, 152, 152);
 }
 
 .round-button:hover {
-    border-left-color: rgba(255, 255, 255, 255);
-    border-right-color: rgba(255, 255, 255, 255);
-    border-top-color: rgba(255, 255, 255, 255);
-    border-bottom-color: rgba(255, 255, 255, 255);
+    border-left-color: rgb(255, 255, 255);
+    border-right-color: rgb(255, 255, 255);
+    border-top-color: rgb(255, 255, 255);
+    border-bottom-color: rgb(255, 255, 255);
 }
 
 .round-button:active {
-    background-color: rgba(99, 99, 99, 255);
+    background-color: rgb(99, 99, 99);
+}
+
+.text-field {
+    color: rgba(255, 255, 255, 255);
+    background-color: rgba(0, 0, 0, 0.8);
+    border-left-color: rgba(0, 0, 0, 255);
+    border-right-color: rgba(0, 0, 0, 255);
+    border-top-color: rgba(0, 0, 0, 255);
+    border-bottom-color: rgba(0, 0, 0, 255);
 }
