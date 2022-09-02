@@ -73,7 +73,6 @@ public class SaveGameView : MonoBehaviour
         var saveSystem = Systems.Get<SaveSystem.ISaveSystem>();
 
         var selectedItem = saveGameList.selectedItem;
-        saveGameList.ClearSelection();
         if (selectedItem == null)
         {
             var value = textField.value;
