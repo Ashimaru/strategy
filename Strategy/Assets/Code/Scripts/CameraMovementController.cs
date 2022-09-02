@@ -55,11 +55,11 @@ public class CameraMovementController : MonoBehaviour, SaveSystem.ISaveable
     [System.Serializable]
     public class SaveData
     {
-        public float[] position;
+        public Vector3 position;
 
         public SaveData()
         {
-            position = new float[3] { 0.0f, 0.0f, -10.0f };
+            position = new Vector3(0,0,-10);
         }
     }
 
@@ -67,13 +67,13 @@ public class CameraMovementController : MonoBehaviour, SaveSystem.ISaveable
     {
         return new SaveData()
         {
-            position = Serialization.ToSerializable(transform.position)
+            position = transform.position
         };
     }
 
     public void LoadState(object savedState)
     {
         var saveData = (SaveData)savedState;
-        transform.position = Serialization.ToVector3(saveData.position);
+        transform.position = saveData.position;
     }
 }

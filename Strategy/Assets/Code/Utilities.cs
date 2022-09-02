@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization;
 using UnityEngine;
 public static class ExtensionMethods
 {
@@ -63,22 +64,23 @@ public static class Utils
     }
 }
 
-
-public static class Serialization
+public class Vector3Surrogate : ISerializationSurrogate
 {
-    public static float[] ToSerializable(Vector3 vector)
+    public void GetObjectData(object obj, SerializationInfo info, StreamingContext context)
     {
-        float[] result = new float[3] { vector.x, vector.y, vector.z };
-        return result;
+        Vector3 vec = (Vector3)obj;
+        info.AddValue("x", vec.x);
+        info.AddValue("y", vec.y);
+        info.AddValue("z", vec.z);
     }
 
-    public static Vector3 ToVector3(float[] vector)
+    public object SetObjectData(object obj, SerializationInfo info, StreamingContext context, ISurrogateSelector selector)
     {
-        if(vector.Length == 3)
-        {
-            return new Vector3(vector[0], vector[1], vector[2]);
-        }
-        Debug.LogWarning("Passed non 3 dimensional array to be converted to Vector3");
-        return Vector3.zero;
+        Vector3 vec = (Vector3)obj;
+        vec.x = (float)info.GetValue("x", typeof(float));
+        vec.y = (float)info.GetValue("y", typeof(float));
+        vec.z = (float)info.GetValue("z", typeof(float));
+        obj = vec;
+        return obj;
     }
 }

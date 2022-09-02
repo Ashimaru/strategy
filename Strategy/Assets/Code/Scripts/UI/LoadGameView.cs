@@ -1,3 +1,4 @@
+using SaveSystem;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -6,7 +7,18 @@ using UnityEngine.UIElements;
 public class LoadGameView : MonoBehaviour
 {
     private VisualElement root;
+    private VisualElement screenShotField;
     private ListView loadGameList;
+    IPauseUIView pauseUIView;
+
+    private void Awake()
+    {
+        pauseUIView = GetComponentInParent<IPauseUIView>();
+        if (pauseUIView == null)
+        {
+            Debug.LogError("Parent is missing IPauseUIView component");
+        }
+    }
 
     private void OnEnable()
     {
@@ -14,6 +26,7 @@ public class LoadGameView : MonoBehaviour
 
         root.Q<Button>("exit-load-game-screen").RegisterCallback<MouseUpEvent>(evt => ExitLoadGameScreen());
         root.Q<Button>("load-game").RegisterCallback<MouseUpEvent>(evt => LoadGame());
+        screenShotField = root.Q<VisualElement>("screen-shot");
         loadGameList = root.Q<ListView>("load-game-list");
         FillLoadGameList();
     }
@@ -21,13 +34,12 @@ public class LoadGameView : MonoBehaviour
     private void ExitLoadGameScreen()
     {
         Debug.Log("Exit Load Game Screen");
-        gameObject.SetActive(false);
+        pauseUIView.TransitionToPauseMenuView();
     }
 
     private void FillLoadGameList()
     {
         var fileList = FileHandler.GetSaveGameFileList();
-
 
         loadGameList.makeItem = () => new Label();
         loadGameList.bindItem = (e, i) => {
@@ -42,6 +54,16 @@ public class LoadGameView : MonoBehaviour
         loadGameList.onSelectionChange += objects => Debug.Log(objects);
 
         loadGameList.itemsSource = fileList;
+
+        loadGameList.onSelectedIndicesChange += ShowSaveGameMetaData;
+    }
+
+    private void ShowSaveGameMetaData(IEnumerable<int> index)
+    {
+        var item = (SaveGameMetaData)loadGameList.selectedItem;
+        var screenShot = new Texture2D(2,2);
+        screenShot.LoadImage(item.screenShot);
+        screenShotField.style.backgroundImage = new StyleBackground(screenShot);
     }
 
     private void LoadGame()
@@ -52,8 +74,9 @@ public class LoadGameView : MonoBehaviour
             Debug.Log("No save was picked");
             return;
         }
-        var loadItem = (SaveGameFile)selectedItem;
+        var loadItem = (SaveGameMetaData)selectedItem;
         var saveSystem = Systems.Get<SaveSystem.ISaveSystem>();
+        pauseUIView.HideUI();
         saveSystem.LoadGame(loadItem.name);
     }
 }

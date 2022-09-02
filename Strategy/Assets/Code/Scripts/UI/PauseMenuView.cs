@@ -2,19 +2,19 @@ using UnityEngine;
 using UnityEngine.UIElements;
 using UnityEngine.SceneManagement;
 
-public class PauseMenu : MonoBehaviour
+public class PauseMenuView : MonoBehaviour
 {
     [SerializeField]
     private string mainMenuSceneName;
-    [SerializeField]
-    private GameObject loadGameScreen;
-    [SerializeField]
-    private GameObject saveGameScreen;
-
+    IPauseUIView pauseUIView;
 
     private void Awake()
     {
-        //gameObject.SetActive(false);
+        pauseUIView = GetComponentInParent<IPauseUIView>();
+        if(pauseUIView == null)
+        {
+            Debug.LogError("Parent is missing IPauseUIView component");
+        }
     }
 
     private void OnEnable()
@@ -30,13 +30,13 @@ public class PauseMenu : MonoBehaviour
     private void SaveGame()
     {
         Debug.Log("Save Game");
-        saveGameScreen.SetActive(true);
+        pauseUIView.TransitionToSaveGameView();
     }
 
     private void LoadGame()
     {
         Debug.Log("Load Game");
-        loadGameScreen.SetActive(true);
+        pauseUIView.TransitionToLoadGameView();
     }
 
     private void QuitToMainMenu()

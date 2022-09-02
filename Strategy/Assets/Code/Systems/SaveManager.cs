@@ -2,9 +2,18 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
+using System.IO;
 
 namespace SaveSystem
 {
+    [System.Serializable]
+    public struct SaveGameMetaData
+    {
+        public string name;
+        public string date;
+        public byte[] screenShot;
+    }
+
     public interface ISaveSystem
     {
         public void SaveGame(string fileName);
@@ -14,8 +23,6 @@ namespace SaveSystem
 
     public class SaveManager : MonoBehaviour, ISaveSystem
     {
-        private Dictionary<string, object> savedGame;
-
         private void Awake()
         {
             Systems.RegisterSystem<ISaveSystem>(this);
@@ -23,9 +30,22 @@ namespace SaveSystem
 
         public void SaveGame(string fileName)
         {
+            StartCoroutine(TakeScreenShot((result) => {
+                ContinueSaving(fileName, result);
+            }));
+        }
+
+        private void ContinueSaving(string fileName, Texture2D screenShot)
+        {
             var state = new Dictionary<string, object>();
             SaveState(ref state);
+
+            SaveGameMetaData saveGameMetaData = new SaveGameMetaData();
+            saveGameMetaData.screenShot = ImageConversion.EncodeToPNG(screenShot);
+            saveGameMetaData.name = fileName;
+
             FileHandler.SaveGame(state, fileName);
+            FileHandler.SaveMetaData(saveGameMetaData);
         }
 
         public void LoadGame(string fileName)
@@ -51,6 +71,12 @@ namespace SaveSystem
                     saveable.LoadState(savedState);
                 }
             }
+        }
+
+        IEnumerator TakeScreenShot(System.Action<Texture2D> callback)
+        {
+            yield return new WaitForEndOfFrame();
+            callback(ScreenCapture.CaptureScreenshotAsTexture());
         }
     }
 }
