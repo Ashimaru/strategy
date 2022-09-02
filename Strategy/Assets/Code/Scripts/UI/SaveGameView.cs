@@ -10,6 +10,7 @@ public class SaveGameView : MonoBehaviour
     private ListView saveGameList;
     private TextField textField;
     private IPauseUIView pauseUiView;
+    private VisualElement screenShotField;
 
     private void Awake()
     {
@@ -28,6 +29,7 @@ public class SaveGameView : MonoBehaviour
         root.Q<Button>("save-game").RegisterCallback<MouseUpEvent>(evt => SaveGame());
         saveGameList = root.Q<ListView>("save-game-list");
         textField = root.Q<TextField>("new-save-game");
+        screenShotField = root.Q<VisualElement>("screen-shot");
         FillLoadGameList();
     }
 
@@ -54,6 +56,16 @@ public class SaveGameView : MonoBehaviour
         saveGameList.onSelectionChange += objects => Debug.Log(objects);
 
         saveGameList.itemsSource = fileList;
+
+        saveGameList.onSelectedIndicesChange += ShowSaveGameMetaData;
+    }
+
+    private void ShowSaveGameMetaData(IEnumerable<int> index)
+    {
+        var item = (SaveGameMetaData)saveGameList.selectedItem;
+        var screenShot = new Texture2D(2, 2);
+        screenShot.LoadImage(item.screenShot);
+        screenShotField.style.backgroundImage = new StyleBackground(screenShot);
     }
 
     void SaveGame()
@@ -61,6 +73,7 @@ public class SaveGameView : MonoBehaviour
         var saveSystem = Systems.Get<SaveSystem.ISaveSystem>();
 
         var selectedItem = saveGameList.selectedItem;
+        saveGameList.ClearSelection();
         if (selectedItem == null)
         {
             var value = textField.value;
