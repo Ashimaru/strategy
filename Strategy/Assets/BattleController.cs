@@ -29,7 +29,6 @@ class BattleEntry
         }
         EnemyLosses.Add(unitName, numberOfDeadUnits);
     }
-
 }
 
 class BattleHistory
@@ -67,6 +66,11 @@ class ArmyData
 
 public class BattleController : MonoBehaviour
 {
+    //First arg is winning army, second is losing army
+    public Action<ArmyController, ArmyController> OnBattleFinished;
+    public Tilemap UnitsTilemap;
+    public Vector3Int Position;
+
     private ArmyController _attackingArmy;
     private ArmyController _defendingArmy;
 
@@ -88,22 +92,29 @@ public class BattleController : MonoBehaviour
     private TileBase _battleTile;
     [SerializeField]
     private TileBase _battlefieldTile;
-    [SerializeField]
-    private Tilemap _unitsTilemap;
 
     private BattleHistory _history = new();
 
-    void Start()
+
+    private void Awake()
     {
         _grid = Systems.Get<IGrid>();
+    }
 
-        var attackingArmyCopy = Instantiate(_testAttackingArmy);
-        var defendingArmyCopy = Instantiate(_testDefendingArmy);
+    void Start()
+    {
+        //if(_attackingArmyData != null)
+        //{
+        //    return;
+        //}
 
-        _attackingArmyData = new ArmyData(attackingArmyCopy);
-        _defendingArmyData = new ArmyData(defendingArmyCopy);
+        //var attackingArmyCopy = Instantiate(_testAttackingArmy);
+        //var defendingArmyCopy = Instantiate(_testDefendingArmy);
 
-        StartBattle();
+        //_attackingArmyData = new ArmyData(attackingArmyCopy);
+        //_defendingArmyData = new ArmyData(defendingArmyCopy);
+
+        //StartBattle();
     }
 
     public void StartBattle(ArmyController attackingArmy, ArmyController defendingArmy)
@@ -120,9 +131,13 @@ public class BattleController : MonoBehaviour
 
     private void StartBattle()
     {
-        _unitsTilemap.SetTile(_grid.WorldToGrid(transform.position), _battleTile);
+        UnitsTilemap.SetTile(Position, _battleTile);
 
         Attack(_attackingArmyData, _defendingArmyData);
+        if (_isBattleFinished)
+        {
+            return;
+        }
         Attack(_defendingArmyData, _attackingArmyData);
 
         _attackingArmyAttackTimer = Utils.CreateRepeatingTimer(gameObject, 1, () => Attack(_attackingArmyData, _defendingArmyData), $"{_attackingArmyData.Army.ArmyName} attack timer");
@@ -131,8 +146,15 @@ public class BattleController : MonoBehaviour
 
     private void Attack(ArmyData attackingArmy, ArmyData defendingArmy)
     {
-        BattleEntry battleEntry = new BattleEntry(attackingArmy.Army.ArmyName);
-        Debug.Log($"{attackingArmy.Army.ArmyName} attacks {defendingArmy.Army.ArmyName} for {++attackingArmy.AttackTurn} time.");
+        if(_isBattleFinished)
+        {
+            //Debug.Log("Battle is already completed.");
+            return;
+        }
+
+        BattleEntry battleEntry = new(attackingArmy.Army.ArmyName);
+        attackingArmy.AttackTurn += 1;
+        Debug.Log($"{attackingArmy.Army.ArmyName} attacks {defendingArmy.Army.ArmyName} for {attackingArmy.AttackTurn} time.");
         AttackWithMeleeUnits(attackingArmy, defendingArmy, battleEntry);
 
         if (!_isBattleFinished)
@@ -144,7 +166,7 @@ public class BattleController : MonoBehaviour
 
     private void AttackWithMeleeUnits(ArmyData attackingArmy, ArmyData defendingArmy, BattleEntry battleEntry)
     {
-        Debug.Log($"{attackingArmy.Army.ArmyName} attacks {defendingArmy.Army.ArmyName} with melee.");
+        //Debug.Log($"{attackingArmy.Army.ArmyName} attacks {defendingArmy.Army.ArmyName} with melee.");
         var meeleGroupsInAttackingArmy = GetGroupsOfType(UnitType.Melee, attackingArmy.Groups);
         var meeleGroupsInDefendingArmy = GetGroupsOfType(UnitType.Melee, defendingArmy.Groups);
         var rangedGroupsInDefendingArmy = GetGroupsOfType(UnitType.Ranged, defendingArmy.Groups);
@@ -154,14 +176,14 @@ public class BattleController : MonoBehaviour
         var numberOfRangedUnitsInDefendingArmy = rangedGroupsInDefendingArmy.Sum(group => group.Group.NumberOfMembers);
 
         var totalDamage = CalculateDamage(meeleGroupsInAttackingArmy);
-        Debug.LogFormat("Total damage dealt {0}", totalDamage);
+        //Debug.LogFormat("Total damage dealt {0}", totalDamage);
         battleEntry.TotalDamage += totalDamage;
 
         (int damageToMeele, int damageToRanged) = CalculateDamageMeleeAndRanged(attackingArmy, defendingArmy, numberOfMeeleUnitsInAttackingArmy, numberOfMeeleUnitsInDefendingArmy, totalDamage);
 
         var damageForEachMeleeDefendingGroup = Mathf.CeilToInt((float)damageToMeele / meeleGroupsInDefendingArmy.Count());
         var damageForEachRangedDefendingGroup = Mathf.CeilToInt((float)damageToRanged / meeleGroupsInDefendingArmy.Count());
-        Debug.Log($"Damage for each melee group: {damageForEachMeleeDefendingGroup}, damage for each ranged group {damageForEachRangedDefendingGroup}");
+        //Debug.Log($"Damage for each melee group: {damageForEachMeleeDefendingGroup}, damage for each ranged group {damageForEachRangedDefendingGroup}");
 
         var deadGroups = ApplyDamage(meeleGroupsInDefendingArmy, damageForEachMeleeDefendingGroup, battleEntry);
         deadGroups.AddRange(ApplyDamage(rangedGroupsInDefendingArmy, damageForEachRangedDefendingGroup, battleEntry));
@@ -180,23 +202,23 @@ public class BattleController : MonoBehaviour
 
     private (int, int) CalculateDamageMeleeAndRanged(ArmyData attackingArmy, ArmyData defendingArmy, int numberOfMeeleUnitsInAttackingArmy, int numberOfMeeleUnitsInDefendingArmy, int totalDamage)
     {
-        Debug.LogFormat("Number of attacking units: {0}, number of defending units: {1}", numberOfMeeleUnitsInAttackingArmy, numberOfMeeleUnitsInDefendingArmy);
+        //Debug.LogFormat("Number of attacking units: {0}, number of defending units: {1}", numberOfMeeleUnitsInAttackingArmy, numberOfMeeleUnitsInDefendingArmy);
         var numberofUnitsToOverflow = numberOfMeeleUnitsInAttackingArmy - 2 * numberOfMeeleUnitsInDefendingArmy;
         if (numberofUnitsToOverflow <= 0)
         {
-            Debug.Log($"{attackingArmy.Army.ArmyName} has not enough meele units to overflow, all damage is dealt to meele units");
+            //Debug.Log($"{attackingArmy.Army.ArmyName} has not enough meele units to overflow, all damage is dealt to meele units");
             return (totalDamage, 0);
         }
 
         var rangedGroupsInDefendingArmy = GetGroupsOfType(UnitType.Ranged, defendingArmy.Groups);
         if (rangedGroupsInDefendingArmy.Count() == 0)
         {
-            Debug.Log($"{defendingArmy.Army.ArmyName} has not range units, all damage is dealt to meele units");
+            //Debug.Log($"{defendingArmy.Army.ArmyName} has not range units, all damage is dealt to meele units");
             return (totalDamage, 0);
         }
 
         float percentageOfDamageDealtToRangedUnits = (float)numberofUnitsToOverflow / numberOfMeeleUnitsInAttackingArmy;
-        Debug.Log($"{percentageOfDamageDealtToRangedUnits * 100f}% of damage is dealt to ranged units");
+        //Debug.Log($"{percentageOfDamageDealtToRangedUnits * 100f}% of damage is dealt to ranged units");
 
         int damageToRanged = Mathf.CeilToInt(percentageOfDamageDealtToRangedUnits * totalDamage);
         int damageToMeele = totalDamage - damageToRanged;
@@ -206,20 +228,20 @@ public class BattleController : MonoBehaviour
 
     private void AttackWithRangedUnits(ArmyData attackingArmy, ArmyData defendingArmy, BattleEntry battleEntry)
     {
-        Debug.Log($"{attackingArmy.Army.ArmyName} attacks {defendingArmy.Army.ArmyName} with ranged.");
+        //Debug.Log($"{attackingArmy.Army.ArmyName} attacks {defendingArmy.Army.ArmyName} with ranged.");
         var rangedUnitsInAttackingArmy = GetGroupsOfType(UnitType.Ranged, attackingArmy.Groups);
 
         if (rangedUnitsInAttackingArmy.Count() == 0)
         {
-            Debug.Log($"{attackingArmy.Army.ArmyName} has no ranged units.");
+            //Debug.Log($"{attackingArmy.Army.ArmyName} has no ranged units.");
             return;
         }
 
         var totalDamage = CalculateDamage(rangedUnitsInAttackingArmy);
-        Debug.LogFormat("Total damage dealt {0}", totalDamage);
+        //Debug.LogFormat("Total damage dealt {0}", totalDamage);
         battleEntry.TotalDamage += totalDamage;
         var damageForEachDefendingGroup = Mathf.CeilToInt((float)totalDamage / defendingArmy.Groups.Count());
-        Debug.LogFormat("Damage for singular group: {0}", damageForEachDefendingGroup);
+        //Debug.LogFormat("Damage for singular group: {0}", damageForEachDefendingGroup);
 
         var deadGroups = ApplyDamage(defendingArmy.Groups, damageForEachDefendingGroup, battleEntry);
 
@@ -256,7 +278,7 @@ public class BattleController : MonoBehaviour
             if (defendingGroup.RemainingHealth > amountOfDamage)
             {
                 defendingGroup.RemainingHealth -= amountOfDamage;
-                Debug.Log($"0 {unitData.UnitTypeName} die after an attack, remaining health: {defendingGroup.RemainingHealth}. Units left in group: {defendingGroup.Group.NumberOfMembers}");
+                //Debug.Log($"0 {unitData.UnitTypeName} die after an attack, remaining health: {defendingGroup.RemainingHealth}. Units left in group: {defendingGroup.Group.NumberOfMembers}");
                 battleEntry.AddDeadUnits(unitData.UnitTypeName, 0);
                 continue;
 
@@ -265,7 +287,7 @@ public class BattleController : MonoBehaviour
             var howManyUnitsDie = Mathf.Min(Mathf.FloorToInt(amountOfDamage / unitData.MaxHP), defendingGroup.Group.NumberOfMembers);
             var overflowDamage = amountOfDamage - (unitData.MaxHP * howManyUnitsDie);
 
-            Debug.Log($"Current health for {defendingGroup.Group.unitData.UnitTypeName}={defendingGroup.RemainingHealth}/{defendingGroup.Group.unitData.MaxHP}");
+            //Debug.Log($"Current health for {defendingGroup.Group.unitData.UnitTypeName}={defendingGroup.RemainingHealth}/{defendingGroup.Group.unitData.MaxHP}");
             if (overflowDamage >= defendingGroup.RemainingHealth)
             {
                 ++howManyUnitsDie;
@@ -274,12 +296,12 @@ public class BattleController : MonoBehaviour
 
             howManyUnitsDie = Mathf.Min(howManyUnitsDie, defendingGroup.Group.NumberOfMembers);
             defendingGroup.Group.NumberOfMembers -= howManyUnitsDie;
-            Debug.Log($"{howManyUnitsDie} {unitData.UnitTypeName} die after an attack, remaining health: {defendingGroup.RemainingHealth}/{unitData.MaxHP}. Units left in group: {defendingGroup.Group.NumberOfMembers}");
+            //Debug.Log($"{howManyUnitsDie} {unitData.UnitTypeName} die after an attack, remaining health: {defendingGroup.RemainingHealth}/{unitData.MaxHP}. Units left in group: {defendingGroup.Group.NumberOfMembers}");
             battleEntry.AddDeadUnits(unitData.UnitTypeName, howManyUnitsDie);
 
             if (defendingGroup.Group.NumberOfMembers <= 0)
             {
-                Debug.Log($"{unitData.UnitTypeName}s are all dead.");
+                //Debug.Log($"{unitData.UnitTypeName}s are all dead.");
                 deadGroups.Add(defendingGroup);
             }
         }
@@ -290,12 +312,28 @@ public class BattleController : MonoBehaviour
     private void FinishBattle(ArmyData winner)
     {
         Debug.LogFormat("{0} won!", winner.Army.ArmyName);
-        _unitsTilemap.SetTile(_grid.WorldToGrid(transform.position), null);
+        UnitsTilemap.SetTile(Position, null);
         SpawnBattlefield();
 
-        _attackingArmyAttackTimer?.Cancel();
-        _defendingArmyAttackTimer?.Cancel();
+        if(_attackingArmyAttackTimer != null)
+        {
+            _attackingArmyAttackTimer.Cancel();
+        }
+
+        if (_defendingArmyAttackTimer != null)
+        {
+            _defendingArmyAttackTimer.Cancel();
+        }
         _isBattleFinished = true;
+
+        var winningController = _attackingArmy;
+        var losingController = _defendingArmy;
+
+        if(winningController.army != winner.Army)
+        {
+            (winningController, losingController) = (losingController, winningController);
+        }
+        OnBattleFinished(winningController, losingController);
     }
 
     private void SpawnBattlefield()

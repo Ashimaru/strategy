@@ -21,21 +21,38 @@ public class ArmyController : MonoBehaviour,
     public Vector3Int CurrentPosition
     {
         get { return currentPosition; }
-        set
-        {
-            Systems.Get<IClickableTile>().DeregisterClickableTile(currentPosition, this);
-            unitTilemap.SetTile(currentPosition, null);
-            currentPosition = value;
-            gameObject.transform.position = Systems.Get<IGrid>().GridToWorld(value);
-            unitTilemap.SetTile(currentPosition, armyTile);
-            Systems.Get<IClickableTile>().RegisterClickableTile(currentPosition, TileType.Unit, this);
-            Systems.Get<ITileEnterListenerManager>().OnTileEnter(currentPosition, this);
-        }
     }
 
     void Start()
     {
-        CurrentPosition = Systems.Get<IGrid>().WorldToGrid(transform.position);
+        ChangePositionTo(Systems.Get<IGrid>().WorldToGrid(transform.position));
+        Systems.Get<IRepository<ArmyController>>().Add(this);
+    }
+
+    public bool ChangePositionTo(Vector3Int newLocation)
+    {
+        if(currentPosition == newLocation)
+        {
+            Debug.Log($"{army.ArmyName} cannot move to {newLocation} - its already there.");
+            return false;
+        }
+
+        var armiesAtPosition = Systems.Get<IRepository<ArmyController>>().Find(army => army.CurrentPosition == newLocation);
+        if (armiesAtPosition.Count != 0)
+        {
+            var defendingArmy = armiesAtPosition[0];
+            Utils.StartBattle(this, defendingArmy, newLocation, () => { });
+            return false;
+        }
+
+        Systems.Get<IClickableTile>().DeregisterClickableTile(currentPosition, this);
+        unitTilemap.SetTile(currentPosition, null);
+        currentPosition = newLocation;
+        gameObject.transform.position = Systems.Get<IGrid>().GridToWorld(newLocation);
+        unitTilemap.SetTile(currentPosition, armyTile);
+        Systems.Get<IClickableTile>().RegisterClickableTile(currentPosition, TileType.Unit, this);
+        Systems.Get<ITileEnterListenerManager>().OnTileEnter(currentPosition, this);
+        return true;
     }
 
     public void MoveTo(Vector3Int targetPosition)
@@ -81,6 +98,7 @@ public class ArmyController : MonoBehaviour,
     {
         Debug.Log($"Despawning {army.ArmyName}");
         HideArmy();
+        Systems.Get<IRepository<ArmyController>>().Remove(this);
         Destroy(gameObject);
     }
 
@@ -91,6 +109,22 @@ public class ArmyController : MonoBehaviour,
         if (armyViewController.CurrentlyShownArmy == army)
         {
             armyViewController.ClearArmyInfo();
+        }
+    }
+
+    public void StopCurrentOrder()
+    {
+        if (currentOrder != null)
+        {
+            currentOrder.Cancel();
+        }
+    }
+
+    public void ResumeCurrentOrder()
+    {
+        if (currentOrder != null)
+        {
+            currentOrder.Execute();
         }
     }
 

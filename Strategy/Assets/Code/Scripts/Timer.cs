@@ -20,9 +20,17 @@ public class Timer : MonoBehaviour
     private float _totalTime;
     private float _timeLeft;
 
+    bool _isActive = true;
+
     public void Cancel()
     {
-        Destroy(this);
+        if (_isActive)
+        {
+            //Debug.Log($"Removing {Name} on {gameObject.name} with id {GetInstanceID()}");
+            _isActive = false;
+            DestroyImmediate(this);
+        }
+
     }
 
 
@@ -35,7 +43,10 @@ public class Timer : MonoBehaviour
             return;
         }
 
-        OnTimeElapsed();
+        if (_isActive)
+        {
+            OnTimeElapsed();
+        }
 
         if(IsRepeating)
         {
@@ -43,8 +54,6 @@ public class Timer : MonoBehaviour
             return;
         }
 
-        Destroy(this);
-
-
+        Cancel();
     }
 }

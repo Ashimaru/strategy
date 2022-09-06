@@ -14,7 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   UnitTypeName_: Peasant
   UnitType_: 0
-  MeeleAttack_: 1
-  RangedAttack_: 1
+  Attack_: 2
   MaxHP_: 10
   _creationJob: {fileID: 11400000, guid: 69519915132fed84c95c02f773c069f3, type: 2}

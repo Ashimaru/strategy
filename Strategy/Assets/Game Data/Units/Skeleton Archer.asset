@@ -14,6 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   UnitTypeName_: Skeleton Archer
   UnitType_: 1
-  MeeleAttack_: 1
-  RangedAttack_: 5
+  Attack_: 2
   MaxHP_: 7
+  _creationJob: {fileID: 0}

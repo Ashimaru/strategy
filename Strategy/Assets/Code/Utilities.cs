@@ -43,6 +43,7 @@ public static class Utils
     public static Timer CreateTimer(GameObject gameObject, float duration, Action callback, string name)
     {
         var timer = gameObject.AddComponent<Timer>();
+        //Debug.Log($"Creating timer '{name}' on {gameObject.name} with Id {timer.GetInstanceID()}");
         timer.TotalTime = duration;
         timer.OnTimeElapsed = callback;
         timer.Name = name;
@@ -61,6 +62,31 @@ public static class Utils
         var timer = CreateTimer(gameObject, duration, callback, name);
         timer.IsRepeating = true;
         return timer;
+    }
+
+    public static void StartBattle(ArmyController attackingArmy, ArmyController defendingArmy, Vector3Int battlePosition, Action onBattleEnd)
+    {
+        attackingArmy.StopCurrentOrder();
+        defendingArmy.StopCurrentOrder();
+        attackingArmy.HideArmy();
+        defendingArmy.HideArmy();
+        var battle = Systems.Get<IArmyFactory>().CreateBattle(battlePosition);
+
+        battle.OnBattleFinished = (winningArmy, losingArmy) =>
+        {
+            losingArmy.Despawn();
+
+            winningArmy.RestoreArmy();
+            winningArmy.ChangePositionTo(battlePosition);
+            winningArmy.ResumeCurrentOrder();
+
+            UnityEngine.GameObject.Destroy(battle.gameObject);
+
+            onBattleEnd();
+
+        };
+
+        battle.StartBattle(attackingArmy, defendingArmy);
     }
 }
 

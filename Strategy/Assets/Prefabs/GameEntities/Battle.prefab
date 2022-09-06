@@ -46,4 +46,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _testAttackingArmy: {fileID: 11400000, guid: fd41cb7ac9e3ca24eb53c8df62dbc29c, type: 2}
   _testDefendingArmy: {fileID: 11400000, guid: e8c93bf337204dd45a0be6c90305622f, type: 2}
-  _saveBattleLog: 0
+  _battleTile: {fileID: 11400000, guid: d1f188a2abbf8d443b9560d0a004f277, type: 2}
+  _battlefieldTile: {fileID: 11400000, guid: b895e62f41bdfd249820839737a9cf55, type: 2}
+  _unitsTilemap: {fileID: 0}

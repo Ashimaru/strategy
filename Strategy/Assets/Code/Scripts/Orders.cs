@@ -26,8 +26,9 @@ public class MoveOrder : IOrder
 
     void MoveAndStartTimer()
     {
+       
         var moves = Systems.Get<INavigation>().NavigateTowards(armyToMove.CurrentPosition, targetPosition);
-        armyToMove.CurrentPosition = moves[0];
+        bool hasMoved = armyToMove.ChangePositionTo(moves[0]);
         //Debug.Log($"Current position:{armyToMove.CurrentPosition} target position:{targetPosition}");
         if (armyToMove.CurrentPosition == targetPosition)
         {
@@ -36,7 +37,11 @@ public class MoveOrder : IOrder
             onOrderDone();
             return;
         }
-        movementTimer = Utils.CreateTimer(armyToMove.gameObject, 1f, MoveAndStartTimer, "Next move timer");
+
+        if(hasMoved)
+        {
+            movementTimer = Utils.CreateTimer(armyToMove.gameObject, 1f, MoveAndStartTimer, "Next move timer");
+        }
     }
 
     public void Cancel()
@@ -51,7 +56,6 @@ public class MoveOrder : IOrder
 
     public void Execute()
     {
-
         originPosition = armyToMove.CurrentPosition;
         if (targetPosition == originPosition)
         {
@@ -60,7 +64,6 @@ public class MoveOrder : IOrder
             onOrderDone();
             return;
         }
-
 
         armyToMove.army.CurrentAssigmentDescription = GetOrderDescription();
         movementTimer = Utils.CreateTimer(armyToMove.gameObject, 1f, MoveAndStartTimer, "Next move timer");

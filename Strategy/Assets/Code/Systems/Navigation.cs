@@ -86,6 +86,7 @@ public class Navigation : MonoBehaviour, INavigation
 
     public List<Vector3Int> NavigateTowards(Vector3Int currentPosition, Vector3Int targetPosition)
     {
+        Debug.Assert(currentPosition != targetPosition);
         return AStar(currentPosition, targetPosition);
     }
 

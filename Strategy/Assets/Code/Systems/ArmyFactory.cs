@@ -5,12 +5,15 @@ interface IArmyFactory
 {
     GameObject CreateArmy(Army army, Vector3Int position);
     GameObject CreateAIArmy(Army army, Vector3Int position);
+    BattleController CreateBattle(Vector3Int position);
 }
 
 class ArmyFactory : MonoBehaviour, IArmyFactory
 {
     [SerializeField]
     private GameObject armyPrefab;
+    [SerializeField]
+    private GameObject battlePrefab;
     [SerializeField]
     private ArmyViewController armyViewController;
     [SerializeField]
@@ -32,7 +35,7 @@ class ArmyFactory : MonoBehaviour, IArmyFactory
         armyController.armyViewController = armyViewController;
         armyController.unitTilemap = unitsTilemap;
         armyController.armyTile = armyTile;
-        armyController.CurrentPosition = position;
+        armyController.ChangePositionTo(position);
 
         return armyInstance;
     }
@@ -42,6 +45,16 @@ class ArmyFactory : MonoBehaviour, IArmyFactory
         var armyGo = CreateArmy(army, position);
         armyGo.AddComponent<AIArmyController>();
         return armyGo;
+    }
+
+    public BattleController CreateBattle(Vector3Int position)
+    {
+        var battleGo = Instantiate(battlePrefab);
+        var battleCtrl =  battleGo.GetComponent<BattleController>();
+        battleCtrl.UnitsTilemap = unitsTilemap;
+        battleCtrl.Position = position;
+
+        return battleCtrl;
     }
 }
 

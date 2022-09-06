@@ -1463,6 +1463,7 @@ GameObject:
   - component: {fileID: 312855718}
   - component: {fileID: 312855719}
   - component: {fileID: 312855721}
+  - component: {fileID: 312855722}
   m_Layer: 0
   m_Name: Systems
   m_TagString: Untagged
@@ -1535,6 +1536,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   armyPrefab: {fileID: 6596777431991273190, guid: 71c8fab66cfa9c041afea8033f27236a, type: 3}
+  battlePrefab: {fileID: 3616121794793092026, guid: 8a6e95a4647788d4d84483d605f239f7, type: 3}
   armyViewController: {fileID: 267027764}
   unitsTilemap: {fileID: 1527228673}
   armyTile: {fileID: 11400000, guid: 7abb8c1be6b620441a1ba8bd214339ae, type: 2}
@@ -1602,6 +1604,18 @@ MonoBehaviour:
   pauseMenu: {fileID: 690112815}
   loadGameScreen: {fileID: 1245418082}
   saveGameScreen: {fileID: 670817360}
+--- !u!114 &312855722
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 312855711}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 420063ccad71b424fbb5e1c5571c071b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &329333015
 GameObject:
   m_ObjectHideFlags: 0
