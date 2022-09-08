@@ -26,10 +26,14 @@ public class PatrolController : MonoBehaviour
     private Location _myLocation;
     [SerializeField]
     private List<PatrolPath> _possiblePatrols;
-
     [SerializeField]
     private float _timeForNextPatrolToBeSent = 10f;
+    [SerializeField]
+    private RegionHeatManager _regionHeat;
+
+
     private Timer _nextPatrolTimer;
+    private Timer _waitForPatrolToComeback;
 
     private ArmyController _currentPatrol;
 
@@ -39,7 +43,7 @@ public class PatrolController : MonoBehaviour
     void Start()
     {
         _myLocation = GetComponent<Location>();
-        _nextPatrolTimer = Utils.CreateRepeatingTimer(gameObject, _timeForNextPatrolToBeSent, SendPatrol, "Patrol sending timer");
+        RestartSendingPatrolTimer();
     }
 
     void SendPatrol()
@@ -54,15 +58,23 @@ public class PatrolController : MonoBehaviour
             Debug.Log($"{_myLocation.LocationData.LocationName}: cannot create patrol - Power:{_myLocation.LocationData.Garrison.Power}/{minimumPatrolPower} Size:{_myLocation.LocationData.Garrison.Size}/{minimumPatrolSize}");
             return;
         }
-
+        _nextPatrolTimer.Cancel();
+        _nextPatrolTimer = null;
         var patrol = Army.CreateGroupFromArmy(_myLocation.LocationData.Garrison,
                                               minimumPatrolSize,
                                               minimumPatrolPower);
         patrol.ArmyName = $"{_myLocation.LocationData.LocationName}'s patrol";
         var armyGo = Systems.Get<IArmyFactory>().CreateAIArmy(patrol, _myLocation.Position);
         _currentPatrol = armyGo.GetComponent<ArmyController>();
+        _currentPatrol.OnArmyDestroyedInBattleCallback += OnPatrolDestroyed;
+
         var armyAi = armyGo.GetComponent<AIArmyController>();
-        armyAi.ExecutePatrol(_myLocation, _possiblePatrols.RandomElement());
+        armyAi.ExecutePatrol(_myLocation, _possiblePatrols.RandomElement(), RestartSendingPatrolTimer);
+    }
+
+    private void RestartSendingPatrolTimer()
+    {
+        _nextPatrolTimer = Utils.CreateRepeatingTimer(gameObject, _timeForNextPatrolToBeSent, SendPatrol, "Patrol sending timer");
     }
 
     private bool CanCreatePatrol()
@@ -82,5 +94,18 @@ public class PatrolController : MonoBehaviour
             return false;
         }
         return true;
+    }
+
+    private void OnPatrolDestroyed()
+    {
+        Debug.Log($"{_currentPatrol.army.ArmyName} got destroyed");
+        _waitForPatrolToComeback = Utils.CreateTimer(gameObject, 30F, () =>
+        {
+            _regionHeat.IncreaseHeat(IncreaseAmount.Small);
+            Debug.Assert(_nextPatrolTimer == null);
+            RestartSendingPatrolTimer();
+        },
+        $"Raise Heat after {_currentPatrol.army.ArmyName} got destroyed");
+        _currentPatrol = null;
     }
 }

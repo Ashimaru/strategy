@@ -35,16 +35,20 @@ public class AIArmyController : MonoBehaviour
         armyController.Despawn();
     }
 
-    internal void ExecutePatrol(Location sourceLocation, PatrolPath path)
+    internal void ExecutePatrol(Location sourceLocation, PatrolPath path, Action OnPatrolCompleted)
     {
         //Debug.Log($"{armyController.army.ArmyName} starts patrol route {path.patrolName}");
-
+        Debug.Assert(OnPatrolCompleted != null);
         foreach(var checkpoint in path.checkpoints)
         {
             armyController.MoveTo(checkpoint.position);
             armyController.Wait(checkpoint.timeToWait);
         }
 
-        armyController.MoveTo(sourceLocation.Position, () => JoinGarrison(sourceLocation));
+        armyController.MoveTo(sourceLocation.Position, () =>
+        {
+            JoinGarrison(sourceLocation);
+            OnPatrolCompleted();
+        });
      }
 }

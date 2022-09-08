@@ -12,6 +12,9 @@ public class ArmyController : MonoBehaviour,
     public Tilemap unitTilemap;
     public TileBase armyTile;
 
+    public delegate void OnArmyDestroyedInBattle();
+    public OnArmyDestroyedInBattle OnArmyDestroyedInBattleCallback { get; set; } = delegate { };
+
     [SerializeField]
     private Vector3Int currentPosition;
     private IOrder currentOrder;
@@ -33,7 +36,7 @@ public class ArmyController : MonoBehaviour,
     {
         if(currentPosition == newLocation)
         {
-            Debug.Log($"{army.ArmyName} cannot move to {newLocation} - its already there.");
+            //Debug.Log($"{army.ArmyName} cannot move to {newLocation} - its already there.");
             return false;
         }
 
@@ -92,6 +95,12 @@ public class ArmyController : MonoBehaviour,
     public void TileSelected(Vector3Int coordinates)
     {
         MoveTo(coordinates);
+    }
+
+    public void DestroyAfterBattle()
+    {
+        OnArmyDestroyedInBattleCallback.Invoke();
+        Despawn();
     }
 
     public void Despawn()

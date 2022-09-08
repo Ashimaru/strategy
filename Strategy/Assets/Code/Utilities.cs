@@ -74,7 +74,7 @@ public static class Utils
 
         battle.OnBattleFinished = (winningArmy, losingArmy) =>
         {
-            losingArmy.Despawn();
+            losingArmy.DestroyAfterBattle();
 
             winningArmy.RestoreArmy();
             winningArmy.ChangePositionTo(battlePosition);
