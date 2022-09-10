@@ -6,14 +6,15 @@ using UnityEngine;
 [RequireComponent(typeof(Location), typeof(JobQueue))]
 public class VillageController : MonoBehaviour
 {
-    private static readonly int requiredNumberOfSoldiersToSendResources = 10;
-    private static readonly int requiredGarrisonStrengthToSendResources = 50;
-
     public Location ParentCity;
     [SerializeField]
     private List<UnitData> _possibleUnits;
     [SerializeField]
     private List<JobData> _possibleJobs;
+    [SerializeField]
+    private HeatSettings heatSettings;
+    [SerializeField]
+    private RegionHeatManager regionHeatManager;
     [SerializeField]
     private int _resourcesGeneratedPerJob = 20;
     [SerializeField]
@@ -107,9 +108,9 @@ public class VillageController : MonoBehaviour
 
     private Army CreateDeliveryGroup()
     {
+        VillageHeatSettings villageHeatSettings = GetHeatSettings();
         var deliveryGroup = Army.CreateGroupFromArmy(_myLocation.LocationData.Garrison,
-                                            requiredNumberOfSoldiersToSendResources,
-                                            requiredGarrisonStrengthToSendResources);
+                                            villageHeatSettings.ResourceGroupRequirements);
         deliveryGroup.ArmyName = _myLocation.LocationData.LocationName + "'s transport";
         deliveryGroup.Aligment = _myLocation.LocationData.alignment;
         return deliveryGroup;
@@ -125,8 +126,9 @@ public class VillageController : MonoBehaviour
 
     private bool HasEnoughGarrisonToSendResourcesToCity()
     {
+        var garrisonRequirements = GetHeatSettings().MinimumGarrisonToSendResources;
         int numberOfSoldiers = _myLocation.LocationData.Garrison.Size;
-        if (numberOfSoldiers < requiredNumberOfSoldiersToSendResources)
+        if (numberOfSoldiers < garrisonRequirements.Size)
         {
             //Debug.Log($"{_myLocation.LocationData.LocationName}: not enough soldiers to send resources:{numberOfSoldiers}/{requiredNumberOfSoldiersToSendResources}");
             return false;
@@ -134,9 +136,9 @@ public class VillageController : MonoBehaviour
 
         int garrisonPower = _myLocation.LocationData.Garrison.Power;
 
-       if(garrisonPower < requiredGarrisonStrengthToSendResources)
+       if(garrisonPower < garrisonRequirements.Power)
         {
-            Debug.Log($"{_myLocation.LocationData.LocationName}: garrison is too weak:{garrisonPower}/{requiredGarrisonStrengthToSendResources}");
+            Debug.Log($"{_myLocation.LocationData.LocationName}: garrison is too weak:{garrisonPower}/{garrisonRequirements.Power}");
             return false;
         }
 
@@ -169,5 +171,10 @@ public class VillageController : MonoBehaviour
         var unitToCreate = possibleUnitsToCreate.RandomElement();
         StartUnitCreationJob(unitToCreate);
         return;
+    }
+
+    private VillageHeatSettings GetHeatSettings()
+    {
+        return heatSettings.GetHeatSettings(regionHeatManager.GetHeatLevel()).VillageSettings;
     }
 }

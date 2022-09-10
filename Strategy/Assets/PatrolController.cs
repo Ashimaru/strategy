@@ -30,14 +30,13 @@ public class PatrolController : MonoBehaviour
     private float _timeForNextPatrolToBeSent = 10f;
     [SerializeField]
     private RegionHeatManager _regionHeat;
-
+    [SerializeField]
+    private HeatSettings _heatSettings;
 
     private Timer _nextPatrolTimer;
     private Timer _waitForPatrolToComeback;
 
     private ArmyController _currentPatrol;
-
-
 
     // Start is called before the first frame update
     void Start()
@@ -61,8 +60,7 @@ public class PatrolController : MonoBehaviour
         _nextPatrolTimer.Cancel();
         _nextPatrolTimer = null;
         var patrol = Army.CreateGroupFromArmy(_myLocation.LocationData.Garrison,
-                                              minimumPatrolSize,
-                                              minimumPatrolPower);
+                                              _heatSettings.GetHeatSettings(_regionHeat.GetHeatLevel()).VillageSettings.PatrolRequirements);
         patrol.ArmyName = $"{_myLocation.LocationData.LocationName}'s patrol";
         var armyGo = Systems.Get<IArmyFactory>().CreateAIArmy(patrol, _myLocation.Position);
         _currentPatrol = armyGo.GetComponent<ArmyController>();

@@ -39,10 +39,10 @@ public class Army : ScriptableObject
         get { return CalculateNumberOfSoldiers(); }
     }
 
-    public static Army CreateGroupFromArmy(Army sourceArmy, int minimumNumberOfMembers, int minimumPower)
+    public static Army CreateGroupFromArmy(Army sourceArmy, GroupRequirements requirements)
     {
-        Debug.Assert(sourceArmy.Size >= minimumNumberOfMembers &&
-                     sourceArmy.Power >= minimumPower);
+        Debug.Assert(sourceArmy.Size >= requirements.Size &&
+                     sourceArmy.Power >= requirements.Power);
 
         var subgroup = CreateInstance<Army>();
         Action addRandomUnitToDeliveryGroup = () =>
@@ -55,12 +55,12 @@ public class Army : ScriptableObject
                 subgroup.soldiers.Remove(soldierType);
             }
         };
-        for (int i = 0; i < minimumNumberOfMembers; ++i)
+        for (int i = 0; i < requirements.Size; ++i)
         {
             addRandomUnitToDeliveryGroup();
         }
 
-        while (subgroup.Power < minimumPower)
+        while (subgroup.Power < requirements.Power)
         {
             //Debug.Log($"Delivery group is too weak ({Utils.CalculateArmyPower(deliveryGroup)}) - adding another unit");
             addRandomUnitToDeliveryGroup();

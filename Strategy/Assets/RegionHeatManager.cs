@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public enum IncreaseAmount
@@ -7,6 +5,13 @@ public enum IncreaseAmount
     Small = 10,
     Medium = 30,
     Large = 80
+}
+
+public enum HeatLevel
+{
+    Low,
+    Medium,
+    High
 }
 
 public class RegionHeatManager : MonoBehaviour
@@ -17,6 +22,20 @@ public class RegionHeatManager : MonoBehaviour
     public int Heat { get { return _heat; } }
     private Timer _heatDecreaseTimer = null;
 
+    public HeatLevel GetHeatLevel()
+    {
+        if(_heat <= 30)
+        {
+            return HeatLevel.Low;
+        }
+
+        if(_heat <= 80)
+        {
+            return HeatLevel.Medium;
+        }
+
+        return HeatLevel.High;
+    }
 
     public void IncreaseHeat(IncreaseAmount amount)
     {

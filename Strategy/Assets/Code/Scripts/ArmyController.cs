@@ -41,10 +41,10 @@ public class ArmyController : MonoBehaviour,
         }
 
         var armiesAtPosition = Systems.Get<IRepository<ArmyController>>().Find(army => army.CurrentPosition == newLocation);
-        if (armiesAtPosition.Count != 0)
+        var armyToFight = SelectArmyToFight(armiesAtPosition);
+        if (armyToFight != null)
         {
-            var defendingArmy = armiesAtPosition[0];
-            Utils.StartBattle(this, defendingArmy, newLocation, () => { });
+            Utils.StartBattle(this, armyToFight, newLocation, () => { });
             return false;
         }
 
@@ -182,5 +182,10 @@ public class ArmyController : MonoBehaviour,
             originalCallback();
             StartNextOrder();
         };
+    }
+    private ArmyController SelectArmyToFight(List<ArmyController> armiesAtTile)
+    {
+        armiesAtTile.RemoveAll(army => army.army.Aligment == this.army.Aligment);
+        return armiesAtTile.Count != 0 ? armiesAtTile[0] : null;
     }
 }

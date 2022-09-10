@@ -5903,6 +5903,14 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1824527766}
     - target: {fileID: 4704027430877450329, guid: 1dadbfddac510c447a14a87f74f88a33, type: 3}
+      propertyPath: heatSettings
+      value: 
+      objectReference: {fileID: 11400000, guid: 59cd97f111202ae40baf7317e2715cf7, type: 2}
+    - target: {fileID: 4704027430877450329, guid: 1dadbfddac510c447a14a87f74f88a33, type: 3}
+      propertyPath: regionHeatManager
+      value: 
+      objectReference: {fileID: 1824527770}
+    - target: {fileID: 4704027430877450329, guid: 1dadbfddac510c447a14a87f74f88a33, type: 3}
       propertyPath: _possibleJobs.Array.size
       value: 1
       objectReference: {fileID: 0}
@@ -5970,6 +5978,14 @@ PrefabInstance:
       propertyPath: m_Enabled
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 5448140407454805801, guid: 1dadbfddac510c447a14a87f74f88a33, type: 3}
+      propertyPath: _regionHeat
+      value: 
+      objectReference: {fileID: 1824527770}
+    - target: {fileID: 5448140407454805801, guid: 1dadbfddac510c447a14a87f74f88a33, type: 3}
+      propertyPath: _heatSettings
+      value: 
+      objectReference: {fileID: 11400000, guid: 59cd97f111202ae40baf7317e2715cf7, type: 2}
     - target: {fileID: 5448140407454805801, guid: 1dadbfddac510c447a14a87f74f88a33, type: 3}
       propertyPath: _possiblePatrols.Array.size
       value: 1
@@ -16500,6 +16516,14 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1824527766}
     - target: {fileID: 4704027430877450329, guid: 1dadbfddac510c447a14a87f74f88a33, type: 3}
+      propertyPath: heatSettings
+      value: 
+      objectReference: {fileID: 11400000, guid: 59cd97f111202ae40baf7317e2715cf7, type: 2}
+    - target: {fileID: 4704027430877450329, guid: 1dadbfddac510c447a14a87f74f88a33, type: 3}
+      propertyPath: regionHeatManager
+      value: 
+      objectReference: {fileID: 1824527770}
+    - target: {fileID: 4704027430877450329, guid: 1dadbfddac510c447a14a87f74f88a33, type: 3}
       propertyPath: _possibleJobs.Array.size
       value: 1
       objectReference: {fileID: 0}
@@ -16575,6 +16599,10 @@ PrefabInstance:
       propertyPath: _regionHeat
       value: 
       objectReference: {fileID: 1824527770}
+    - target: {fileID: 5448140407454805801, guid: 1dadbfddac510c447a14a87f74f88a33, type: 3}
+      propertyPath: _heatSettings
+      value: 
+      objectReference: {fileID: 11400000, guid: 59cd97f111202ae40baf7317e2715cf7, type: 2}
     - target: {fileID: 5448140407454805801, guid: 1dadbfddac510c447a14a87f74f88a33, type: 3}
       propertyPath: _timeForNextPatrolToBeSent
       value: 60
