@@ -6,6 +6,8 @@ using UnityEngine;
 [RequireComponent(typeof(Location), typeof(JobQueue))]
 public class VillageController : MonoBehaviour
 {
+    private static readonly int CRITICAL_GARRISON_POWER = 20;
+
     public Location ParentCity;
     [SerializeField]
     private List<UnitData> _possibleUnits;
@@ -35,7 +37,7 @@ public class VillageController : MonoBehaviour
 
     void DecideNextStep()
     {
-        if(IsGarrisonCritical())
+        if (IsGarrisonCritical())
         {
             FillupGarrison();
             return;
@@ -74,7 +76,7 @@ public class VillageController : MonoBehaviour
 
     private void SendResourcesToCity()
     {
-        if(!shouldSendResourcesToCity)
+        if (!shouldSendResourcesToCity)
         {
             StartResourceProductionJob();
             return;
@@ -136,7 +138,7 @@ public class VillageController : MonoBehaviour
 
         int garrisonPower = _myLocation.LocationData.Garrison.Power;
 
-       if(garrisonPower < garrisonRequirements.Power)
+        if (garrisonPower < garrisonRequirements.Power)
         {
             Debug.Log($"{_myLocation.LocationData.LocationName}: garrison is too weak:{garrisonPower}/{garrisonRequirements.Power}");
             return false;
@@ -148,7 +150,7 @@ public class VillageController : MonoBehaviour
     private bool IsGarrisonCritical()
     {
         int power = _myLocation.LocationData.Garrison.Power;
-        if (power < 20)
+        if (power < CRITICAL_GARRISON_POWER)
         {
             //Debug.Log($"{_myLocation.LocationData.LocationName}: garrison is critical ({power}).");
             return true;
@@ -161,7 +163,7 @@ public class VillageController : MonoBehaviour
         var possibleUnitsToCreate = new List<UnitData>(_possibleUnits);
         possibleUnitsToCreate.RemoveAll(unitData => unitData.CreationJob.JobCost > _resources);
 
-        if(possibleUnitsToCreate.Count == 0)
+        if (possibleUnitsToCreate.Count == 0)
         {
             //Debug.Log($"Not enough resources({_resources}) to create new unit");
             StartResourceProductionJob();

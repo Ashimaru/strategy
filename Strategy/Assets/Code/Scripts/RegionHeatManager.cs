@@ -22,6 +22,13 @@ public class RegionHeatManager : MonoBehaviour
     public int Heat { get { return _heat; } }
     private Timer _heatDecreaseTimer = null;
 
+    private IGlobalHeatManager _globalHeatManager;
+
+    void Start()
+    {
+        _globalHeatManager = Systems.Get<IGlobalHeatManager>();
+    }
+
     public HeatLevel GetHeatLevel()
     {
         if(_heat <= 30)
@@ -49,7 +56,7 @@ public class RegionHeatManager : MonoBehaviour
         if(_heat >= 100)
         {
             _heat = 100;
-            Debug.Log("ALARM!!! HEAT CRITICAL - NOT IMPLEMENTED YET");
+            _globalHeatManager.IncreaseHeat();
             return;
         }
     }
