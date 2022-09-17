@@ -134,6 +134,11 @@ public class Navigation : MonoBehaviour, INavigation
         navigationToGrid = gridToNavigation.Reverse();
     }
 
+    private void OnDestroy()
+    {
+        Systems.DeregisterSystem<INavigation>(this);
+    }
+
     private void OnDrawGizmos()
     {
         Vector3 size = new(0.2F, 0.2F, 0.2F);

@@ -17,6 +17,11 @@ public class TileEnterListenerManager : MonoBehaviour, ITileEnterListenerManager
         Systems.RegisterSystem<ITileEnterListenerManager>(this);
     }
 
+    private void OnDestroy()
+    {
+        Systems.DeregisterSystem<ITileEnterListenerManager>(this);
+    }
+
     public void RegisterForTileEnter(Vector3Int tileCoords, IEnterableTile listener)
     {
         _listeners.Add(tileCoords, listener);

@@ -25,6 +25,10 @@ class ArmyFactory : MonoBehaviour, IArmyFactory
     {
         Systems.RegisterSystem<IArmyFactory>(this);
     }
+    private void OnDestroy()
+    {
+        Systems.DeregisterSystem<IArmyFactory>(this);
+    }
 
     public GameObject CreateArmy(Army army, Vector3Int position)
     {

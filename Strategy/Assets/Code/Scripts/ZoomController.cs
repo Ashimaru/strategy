@@ -2,7 +2,7 @@ using SaveSystem;
 using UnityEngine;
 
 [RequireComponent(typeof(Camera))]
-public class ZoomController : MonoBehaviour, SaveSystem.ISaveable
+public class ZoomController : MonoBehaviour, ISaveable
 {
     [SerializeField]
     private float minZoom, maxZoom, zoomSpeed = 1F;

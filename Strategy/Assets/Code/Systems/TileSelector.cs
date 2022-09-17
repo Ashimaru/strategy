@@ -35,6 +35,10 @@ public class TileSelector : MonoBehaviour, ITileSelector
         Systems.RegisterSystem<ITileSelector>(this);
     }
 
+    private void OnDestroy()
+    {
+        Systems.DeregisterSystem<ITileSelector>(this);
+    }
     void Update()
     {
         if (!Input.GetMouseButtonDown(1) || EventSystem.current.IsPointerOverGameObject())

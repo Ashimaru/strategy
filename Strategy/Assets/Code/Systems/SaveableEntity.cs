@@ -1,23 +1,12 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace SaveSystem 
 {
+    [RequireComponent(typeof(PersistentId))]
     public class SaveableEntity : MonoBehaviour
     {
-        [SerializeField]
-        private string id;
-
-        public string Id => id;
-
-        [ContextMenu("Generate Id")]
-        private void GenerateId()
-        {
-            id = Guid.NewGuid().ToString();
-        }
-
         public object SaveState()
         {
             var state = new Dictionary<string, object>();

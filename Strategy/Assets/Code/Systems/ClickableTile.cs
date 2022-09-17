@@ -90,6 +90,11 @@ public class ClickableTile : MonoBehaviour, IClickableTile
         Systems.RegisterSystem<IClickableTile>(this);
     }
 
+    private void OnDestroy()
+    {
+        Systems.DeregisterSystem<IClickableTile>(this);
+    }
+
     void Update()
     {
         if (!Input.GetMouseButtonDown(0))

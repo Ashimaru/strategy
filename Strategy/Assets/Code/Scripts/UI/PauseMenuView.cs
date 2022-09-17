@@ -42,11 +42,12 @@ public class PauseMenuView : MonoBehaviour
     private void QuitToMainMenu()
     {
         Debug.Log("Quit To Main Menu");
-        SceneManager.LoadScene(mainMenuSceneName, LoadSceneMode.Single);
+        GameManager.instance.LoadScene(SceneIndexes.MAIN_MENU);
     }
 
     private void QuitToDesktop()
     {
         Debug.Log("Quit To Desktop");
+        Application.Quit();
     }
 }

@@ -20,6 +20,11 @@ public class GridInfo : MonoBehaviour, IGrid
         Systems.RegisterSystem<IGrid>(this);
     }
 
+    private void OnDestroy()
+    {
+        Systems.DeregisterSystem<IGrid>(this);
+    }
+
     public Vector3Int WorldToGrid(Vector3 position)
     {
         var result = grid.WorldToCell(position);

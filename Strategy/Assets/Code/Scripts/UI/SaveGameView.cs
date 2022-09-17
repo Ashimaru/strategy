@@ -70,25 +70,32 @@ public class SaveGameView : MonoBehaviour
 
     void SaveGame()
     {
-        var saveSystem = Systems.Get<SaveSystem.ISaveSystem>();
-
         var selectedItem = saveGameList.selectedItem;
         if (selectedItem == null)
         {
-            var value = textField.value;
-            if (value == "")
+            var saveName = textField.value;
+            if (saveName == "")
             {
                 return;
             }
-            pauseUiView.HideUI();
-            saveSystem.SaveGame(value);
+            Save(saveName);
 
             return;
         }
 
         // TODO Implement overwrite pop up window
         var saveItem = (SaveGameMetaData)selectedItem;
+        Save(saveItem.name);
+    }
+
+    void Save(string saveName)
+    {
         pauseUiView.HideUI();
-        saveSystem.SaveGame(saveItem.name);
+        if (SaveSystem.SaveManager.instance == null)
+        {
+            Debug.LogWarning("Saving only available when running game from PersistantScene");
+            return;
+        }
+        SaveSystem.SaveManager.instance.SaveGame(saveName);
     }
 }

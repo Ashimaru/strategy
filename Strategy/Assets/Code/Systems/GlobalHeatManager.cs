@@ -17,6 +17,10 @@ public class GlobalHeatManager : MonoBehaviour, IGlobalHeatManager
         Systems.RegisterSystem<IGlobalHeatManager>(this);
     }
 
+    private void OnDestroy()
+    {
+        Systems.DeregisterSystem<IGlobalHeatManager>(this);
+    }
 
     public void IncreaseHeat()
     {

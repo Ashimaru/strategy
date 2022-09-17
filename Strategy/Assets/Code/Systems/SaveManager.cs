@@ -23,11 +23,12 @@ namespace SaveSystem
 
     public class SaveManager : MonoBehaviour, ISaveSystem
     {
+        public static ISaveSystem instance;
+
         private void Awake()
         {
-            Systems.RegisterSystem<ISaveSystem>(this);
+            instance = this;
         }
-
         public void SaveGame(string fileName)
         {
             StartCoroutine(TakeScreenShot((result) => {
@@ -38,6 +39,7 @@ namespace SaveSystem
         private void ContinueSaving(string fileName, Texture2D screenShot)
         {
             var state = new Dictionary<string, object>();
+            GameManager.instance.SaveGame(ref state);
             SaveState(ref state);
 
             SaveGameMetaData saveGameMetaData = new SaveGameMetaData();
@@ -51,14 +53,14 @@ namespace SaveSystem
         public void LoadGame(string fileName)
         {
             var state = FileHandler.LoadGame(fileName);
-            LoadState(state);
+            GameManager.instance.LoadGame(state, (state) => LoadState(state));
         }
 
         private void SaveState(ref Dictionary<string, object> state)
         {
             foreach(var saveable in FindObjectsOfType<SaveableEntity>())
             {
-                state[saveable.Id] = saveable.SaveState();
+                state[saveable.gameObject.GetComponent<PersistentId>().Id] = saveable.SaveState();
             }
         }
 
@@ -66,7 +68,7 @@ namespace SaveSystem
         {
             foreach (var saveable in FindObjectsOfType<SaveableEntity>())
             {
-                if(state.TryGetValue(saveable.Id, out object savedState))
+                if(state.TryGetValue(saveable.gameObject.GetComponent<PersistentId>().Id, out object savedState))
                 {
                     saveable.LoadState(savedState);
                 }

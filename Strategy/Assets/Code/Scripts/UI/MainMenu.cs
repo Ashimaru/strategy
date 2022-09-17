@@ -15,19 +15,24 @@ public class MainMenu : MonoBehaviour
 
         rootVisualElement.Q<Button>("new-game").RegisterCallback<MouseUpEvent>(evt => NewGame());
         rootVisualElement.Q<Button>("load-game").RegisterCallback<MouseUpEvent>(evt => LoadGame());
+        rootVisualElement.Q<Button>("settings").RegisterCallback<MouseUpEvent>(evt => Settings());
         rootVisualElement.Q<Button>("quit-game").RegisterCallback<MouseUpEvent>(evt => Quit());
     }
 
     private void NewGame()
     {
         Debug.Log("New Game");
-        SceneManager.LoadScene(newGameSceneName, LoadSceneMode.Single);
+        GameManager.instance.NewGame();
     }
 
     private void LoadGame()
     {
         Debug.Log("Load Game");
         loadGameScreen.SetActive(true);
+    }
+    private void Settings()
+    {
+        Debug.Log("Settings");
     }
 
     private void Quit()

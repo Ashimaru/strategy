@@ -14,10 +14,6 @@ public class LoadGameView : MonoBehaviour
     private void Awake()
     {
         pauseUIView = GetComponentInParent<IPauseUIView>();
-        if (pauseUIView == null)
-        {
-            Debug.LogError("Parent is missing IPauseUIView component");
-        }
     }
 
     private void OnEnable()
@@ -34,7 +30,8 @@ public class LoadGameView : MonoBehaviour
     private void ExitLoadGameScreen()
     {
         Debug.Log("Exit Load Game Screen");
-        pauseUIView.TransitionToPauseMenuView();
+        if(pauseUIView != null)
+            pauseUIView.TransitionToPauseMenuView();
     }
 
     private void FillLoadGameList()
@@ -75,8 +72,13 @@ public class LoadGameView : MonoBehaviour
             return;
         }
         var loadItem = (SaveGameMetaData)selectedItem;
-        var saveSystem = Systems.Get<SaveSystem.ISaveSystem>();
-        pauseUIView.HideUI();
-        saveSystem.LoadGame(loadItem.name);
+        if(pauseUIView != null)
+            pauseUIView.HideUI();
+        if (SaveSystem.SaveManager.instance == null)
+        {
+            Debug.LogWarning("Loading only available when running game from PersistantScene");
+            return;
+        }
+        SaveSystem.SaveManager.instance.LoadGame(loadItem.name);
     }
 }

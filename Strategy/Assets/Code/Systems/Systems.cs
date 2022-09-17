@@ -10,6 +10,12 @@ public static class Systems
         registeredSystems.Add(systemName, system);
     }
 
+    public static void DeregisterSystem<System>(System system) where System : class
+    {
+        string systemName = typeof(System).Name;
+        registeredSystems.Remove(systemName);
+    }
+
     public static System Get<System>() where System: class
     {
         string systemName = typeof(System).Name;

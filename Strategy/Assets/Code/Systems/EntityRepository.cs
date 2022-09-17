@@ -22,6 +22,10 @@ public class EntityRepository : MonoBehaviour,
         Systems.RegisterSystem<IRepository<ArmyController>>(this);
     }
 
+    private void OnDestroy()
+    {
+        Systems.DeregisterSystem<IRepository<ArmyController>>(this);
+    }
 
     public void Add(ArmyController army)
     {
