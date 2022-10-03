@@ -24,12 +24,11 @@ public class PatrolController : MonoBehaviour
     private static readonly int minimumPatrolPower = 20;
 
     private Location _myLocation;
+    private RegionData _region;
     [SerializeField]
     private List<PatrolPath> _possiblePatrols;
     [SerializeField]
     private float _timeForNextPatrolToBeSent = 10f;
-    [SerializeField]
-    private RegionHeatManager _regionHeat;
     [SerializeField]
     private HeatSettings _heatSettings;
 
@@ -38,10 +37,11 @@ public class PatrolController : MonoBehaviour
 
     private ArmyController _currentPatrol;
 
-    // Start is called before the first frame update
     void Start()
     {
         _myLocation = GetComponent<Location>();
+        _region = GetComponentInParent<RegionData>();
+        Debug.Assert(_region != null, "Village's parent must be a region");
         RestartSendingPatrolTimer();
     }
 
@@ -60,7 +60,7 @@ public class PatrolController : MonoBehaviour
         _nextPatrolTimer.Cancel();
         _nextPatrolTimer = null;
         var patrol = Army.CreateGroupFromArmy(_myLocation.LocationData.Garrison,
-                                              _heatSettings.GetHeatSettings(_regionHeat.GetHeatLevel()).VillageSettings.PatrolRequirements);
+                                              _heatSettings.GetHeatSettings(_region.HeatManager.GetHeatLevel()).VillageSettings.PatrolRequirements);
         patrol.ArmyName = $"{_myLocation.LocationData.LocationName}'s patrol";
         var armyGo = Systems.Get<IArmyFactory>().CreateAIArmy(patrol, _myLocation.Position);
         _currentPatrol = armyGo.GetComponent<ArmyController>();
@@ -99,7 +99,7 @@ public class PatrolController : MonoBehaviour
         Debug.Log($"{_currentPatrol.army.ArmyName} got destroyed");
         _waitForPatrolToComeback = Utils.CreateTimer(gameObject, 30F, () =>
         {
-            _regionHeat.IncreaseHeat(IncreaseAmount.Small);
+            _region.HeatManager.IncreaseHeat(IncreaseAmount.Small);
             Debug.Assert(_nextPatrolTimer == null);
             RestartSendingPatrolTimer();
         },

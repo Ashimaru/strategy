@@ -12,32 +12,51 @@ public interface IRepository<Element>
 
 
 public class EntityRepository : MonoBehaviour,
-                                IRepository<ArmyController>
+                                IRepository<ArmyController>,
+                                IRepository<Location>
                                 
 {
-   private List<ArmyController> armies = new();
+    private List<ArmyController> _armies = new();
+    private List<Location> _locations = new();
 
     void Awake()
     {
         Systems.RegisterSystem<IRepository<ArmyController>>(this);
+        Systems.RegisterSystem<IRepository<Location>>(this);
     }
 
     private void OnDestroy()
     {
         Systems.DeregisterSystem<IRepository<ArmyController>>(this);
+        Systems.DeregisterSystem<IRepository<Location>>(this);
     }
 
     public void Add(ArmyController army)
     {
-        armies.Add(army);
+        _armies.Add(army);
     }
     public List<ArmyController> Find(Func<ArmyController, bool> condition)
     {
-        return armies.Where(condition).ToList();
+        return _armies.Where(condition).ToList();
     }
 
     public void Remove(ArmyController army)
     {
-        armies.Remove(army);
+        _armies.Remove(army);
+    }
+
+    public void Add(Location element)
+    {
+        _locations.Add(element);
+    }
+
+    public void Remove(Location element)
+    {
+        _locations.Remove(element);
+    }
+
+    public List<Location> Find(Func<Location, bool> condition)
+    {
+        return _locations.Where(condition).ToList();
     }
 }

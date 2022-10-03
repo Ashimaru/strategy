@@ -17,9 +17,11 @@ class ArmyFactory : MonoBehaviour, IArmyFactory
     [SerializeField]
     private ArmyViewController armyViewController;
     [SerializeField]
+    private ArmyOrderSelector orderSelector;
+    [SerializeField]
     private Tilemap unitsTilemap;
     [SerializeField]
-    private TileBase armyTile;
+    private TileBase armyTile; 
 
     private void Awake()
     {
@@ -39,6 +41,7 @@ class ArmyFactory : MonoBehaviour, IArmyFactory
         armyController.armyViewController = armyViewController;
         armyController.unitTilemap = unitsTilemap;
         armyController.armyTile = armyTile;
+        armyController.orderSelector = orderSelector;
         armyController.ChangePositionTo(position);
 
         return armyInstance;

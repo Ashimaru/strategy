@@ -8,7 +8,6 @@ public class VillageController : MonoBehaviour
 {
     private static readonly int CRITICAL_GARRISON_POWER = 20;
 
-    public Location ParentCity;
     [SerializeField]
     private List<UnitData> _possibleUnits;
     [SerializeField]
@@ -16,12 +15,12 @@ public class VillageController : MonoBehaviour
     [SerializeField]
     private HeatSettings heatSettings;
     [SerializeField]
-    private RegionHeatManager regionHeatManager;
-    [SerializeField]
     private int _resourcesGeneratedPerJob = 20;
     [SerializeField]
     private int _resourcesNeededToSendToCity = 100;
 
+
+    private RegionData _region;
     private Location _myLocation;
     private JobQueue _jobQueue;
     private int _resources = 0;
@@ -32,6 +31,8 @@ public class VillageController : MonoBehaviour
     {
         _myLocation = GetComponent<Location>();
         _jobQueue = GetComponent<JobQueue>();
+        _region = GetComponentInParent<RegionData>();
+        Debug.Assert(_region != null, "Village's parent must be a region");
         DecideNextStep();
     }
 
@@ -73,7 +74,6 @@ public class VillageController : MonoBehaviour
         _jobQueue.AddToQueue(new Job(unitToCreate.CreationJob, () => AddUnitToGarrison(unitToCreate)));
     }
 
-
     private void SendResourcesToCity()
     {
         if (!shouldSendResourcesToCity)
@@ -96,12 +96,11 @@ public class VillageController : MonoBehaviour
 
         //Debug.Log("Sending resources to city.");
         var army = CreateDeliveryGroup();
-        _myLocation.ShouldSkipNextArmyEnter = true;
 
 
         var armyGo = Systems.Get<IArmyFactory>().CreateAIArmy(army, _myLocation.Position);
         var armyAi = armyGo.GetComponent<AIArmyController>();
-        armyAi.DeliverResourcesToTheCity(_resources, ParentCity, _myLocation);
+        armyAi.DeliverResourcesToTheCity(_resources, _region.Capital.Location, _myLocation);
 
         shouldSendResourcesToCity = false;
         Utils.CreateTimer(gameObject, 30f, () => { shouldSendResourcesToCity = true; }, "Send resources to city");
@@ -177,6 +176,6 @@ public class VillageController : MonoBehaviour
 
     private VillageHeatSettings GetHeatSettings()
     {
-        return heatSettings.GetHeatSettings(regionHeatManager.GetHeatLevel()).VillageSettings;
+        return heatSettings.GetHeatSettings(_region.HeatManager.GetHeatLevel()).VillageSettings;
     }
 }

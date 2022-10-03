@@ -105,3 +105,32 @@ public class WaitOrder : IOrder
     }
 }
 
+public class JoinGarrisonOrder : IOrder
+{
+    private Location _location;
+    private ArmyController _armyController;
+    private Action _onActionCompleted;
+    public JoinGarrisonOrder(Location location, ArmyController armyController, Action onActionCompleted)
+    {
+        _location = location;
+        _armyController = armyController;
+        _onActionCompleted = onActionCompleted;
+    }
+
+    public void Cancel()
+    {
+    }
+
+    public void Execute()
+    {
+        _location.LocationData.Garrison.AddSoldiers(_armyController.army.soldiers);
+        _armyController.Despawn();
+        _onActionCompleted();
+    }
+
+    public string GetOrderDescription()
+    {
+        return $"{_armyController.army.ArmyName} is joining {_location.LocationData.LocationName}."; 
+    }
+}
+

@@ -40,8 +40,6 @@ public class GlobalHeatManager : MonoBehaviour, IGlobalHeatManager
         Debug.Log($"Global heat got increased to {_currentHeat}/{MAX_HEAT}");
     }
 
-
-
     private void StartWar()
     {
         Debug.Log("WAR NOT IMPLEMENTED YET");

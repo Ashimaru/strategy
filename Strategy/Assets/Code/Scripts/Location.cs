@@ -1,5 +1,5 @@
 using UnityEngine;
-public class Location : MonoBehaviour, IEnterableTile
+public class Location : MonoBehaviour
 {
 
     [SerializeField]
@@ -8,27 +8,16 @@ public class Location : MonoBehaviour, IEnterableTile
 
     public Vector3Int Position { get; private set; }
 
-    public bool ShouldSkipNextArmyEnter { get; set; }
+    void OnDestroy()
+    {
+        Systems.Get<IRepository<Location>>().Remove(this);
+    }
 
     void Start()
     {
         LocationData = Instantiate(_locationData);
         LocationData.Garrison = Instantiate(_locationData.Garrison);
         Position = Systems.Get<IGrid>().WorldToGrid(transform.position);
-        Systems.Get<ITileEnterListenerManager>().RegisterForTileEnter(Position, this);
-    }
-
-    public void OnArmyEnter(ArmyController army)
-    {
-        ////Debug.Log($"Testing if {army.army.ArmyName} can enter {LocationData.LocationName} army alingment={army.army.Aligment} city alingment={LocationData.alignment}");
-        //if(army.army.Aligment == LocationData.alignment)
-        //{
-        //    if (!ShouldSkipNextArmyEnter)
-        //    {
-        //        LocationData.Garrison.AddSoldiers(army.army.soldiers);
-        //        army.Despawn();
-        //        ShouldSkipNextArmyEnter = false;
-        //    }
-        //}
+        Systems.Get<IRepository<Location>>().Add(this);
     }
 }

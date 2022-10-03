@@ -1,18 +1,13 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class CityController : MonoBehaviour
 {
-    // Start is called before the first frame update
+    public Location Location => _location;
+    private Location _location;
+
+
     void Start()
     {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
+        _location = GetComponent<Location>();
     }
 }

@@ -41,7 +41,12 @@ public class TileSelector : MonoBehaviour, ITileSelector
     }
     void Update()
     {
-        if (!Input.GetMouseButtonDown(1) || EventSystem.current.IsPointerOverGameObject())
+        if (!Input.GetMouseButtonUp(1))
+        {
+            return;
+        }
+
+        if(EventSystem.current.IsPointerOverGameObject())
         {
             return;
         }
