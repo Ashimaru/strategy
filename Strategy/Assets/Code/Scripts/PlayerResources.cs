@@ -11,6 +11,7 @@ public class PlayerResources : MonoBehaviour
 
     void Awake()
     {
+        Debug.Log("Player Resource Awake");
         _resources = Instantiate(_resourceData);
     }
 

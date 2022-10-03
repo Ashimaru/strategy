@@ -1,0 +1,23 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
+    <Style src="project://database/Assets/UI/UI%20Elements/ResourcePadding.uss?fileID=7433441132597879392&amp;guid=5de03aaf3c1a72845befe1477c2f95d9&amp;type=3#ResourcePadding" />
+    <ui:VisualElement name="screen" style="width: 1920px; height: 1080px; align-items: center;">
+        <ui:VisualElement name="resource-panel" style="align-items: center; justify-content: space-around; flex-direction: row; padding-left: 5px; padding-right: 5px; padding-top: 5px; padding-bottom: 5px; background-color: rgba(0, 0, 0, 0.5);">
+            <ui:VisualElement name="bodies-display" class="resource-padding" style="align-items: stretch; justify-content: space-around; flex-direction: row;">
+                <ui:VisualElement name="bodies-icon" style="background-image: url(&apos;project://database/Assets/UI/Sprites/Skull.png?fileID=2800000&amp;guid=587503b6015abc741ad5147fff8f4a06&amp;type=3#Skull&apos;); width: 32px; height: 32px;" />
+                <ui:Label text="0" display-tooltip-when-elided="true" name="bodies-value" class="resource-value-padding resource-padding resource-value-formatting" style="justify-content: flex-start; align-items: center; -unity-text-align: middle-center;" />
+            </ui:VisualElement>
+            <ui:VisualElement name="bones-display" class="resource-padding" style="align-items: stretch; justify-content: space-around; flex-direction: row;">
+                <ui:VisualElement name="bones-icon" style="background-image: url(&apos;project://database/Assets/UI/Sprites/Bone.png?fileID=2800000&amp;guid=844a1050d03ba5046bfb86af34a81e47&amp;type=3#Bone&apos;); width: 32px; height: 32px;" />
+                <ui:Label text="0" display-tooltip-when-elided="true" name="bones-value" class="resource-value-padding resource-padding resource-value-formatting" style="-unity-text-align: middle-center;" />
+            </ui:VisualElement>
+            <ui:VisualElement name="gold-display" class="resource-padding" style="align-items: stretch; justify-content: space-around; flex-direction: row;">
+                <ui:VisualElement name="gold-icon" style="background-image: url(&apos;project://database/Assets/UI/Sprites/Chest.png?fileID=2800000&amp;guid=c8303e833b0ef184e99c1bc8940fff84&amp;type=3#Chest&apos;); width: 32px; height: 32px;" />
+                <ui:Label text="0" display-tooltip-when-elided="true" name="gold-value" class="resource-value-padding resource-padding resource-value-formatting" style="-unity-text-align: middle-center;" />
+            </ui:VisualElement>
+            <ui:VisualElement name="mana-display" class="resource-padding" style="align-items: stretch; justify-content: space-around; flex-direction: row;">
+                <ui:VisualElement name="mana-icon" style="background-image: url(&apos;project://database/Assets/UI/Sprites/Blue%20Potion%203.png?fileID=2800000&amp;guid=ace8a02646afeda4880fc3cb14cad705&amp;type=3#Blue Potion 3&apos;); width: 32px; height: 32px;" />
+                <ui:Label text="0" display-tooltip-when-elided="true" name="mana-value" class="resource-value-padding resource-padding resource-value-formatting" style="-unity-text-align: middle-center;" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

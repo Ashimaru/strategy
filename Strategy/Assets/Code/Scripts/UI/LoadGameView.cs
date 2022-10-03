@@ -72,8 +72,10 @@ public class LoadGameView : MonoBehaviour
             return;
         }
         var loadItem = (SaveGameMetaData)selectedItem;
+
         if(pauseUIView != null)
             pauseUIView.HideUI();
+
         if (SaveSystem.SaveManager.instance == null)
         {
             Debug.LogWarning("Loading only available when running game from PersistantScene");

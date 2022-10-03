@@ -9,6 +9,7 @@ public class Resource
     private int _amount;
     public int Amount { get => _amount; set
         {
+            Debug.Log("SET " + _amount);
             OnAmountChanged.Invoke(_amount, value);
             _amount = value;
         } }
