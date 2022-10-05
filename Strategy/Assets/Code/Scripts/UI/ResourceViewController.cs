@@ -28,7 +28,6 @@ public class ResourceViewController : MonoBehaviour
 
         void UpdateValue(int oldValue, int newValue)
         {
-            Debug.Log("Update with value " + newValue);
             _label.text = newValue.ToString();
         }
     }
@@ -39,15 +38,11 @@ public class ResourceViewController : MonoBehaviour
 
     private void Awake()
     {
-        Debug.Log("ResourceViewController Awake");
-
         _playerResources = FindObjectOfType<PlayerResources>();
     }
 
     private void OnEnable()
     {
-        Debug.Log("ResourceViewController OnEnable");
-
         root = GetComponent<UIDocument>().rootVisualElement;
 
         _resourcesView.Add(new ResourceView(root.Q<Label>("bodies-value"), _playerResources.Resources.Bodies));

@@ -1,6 +1,6 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
     <Style src="project://database/Assets/UI/UI%20Elements/ResourcePadding.uss?fileID=7433441132597879392&amp;guid=5de03aaf3c1a72845befe1477c2f95d9&amp;type=3#ResourcePadding" />
-    <ui:VisualElement name="screen" style="width: 1920px; height: 1080px; align-items: center;">
+    <ui:VisualElement name="screen" picking-mode="Ignore" style="width: 1920px; height: 1080px; align-items: center;">
         <ui:VisualElement name="resource-panel" style="align-items: center; justify-content: space-around; flex-direction: row; padding-left: 5px; padding-right: 5px; padding-top: 5px; padding-bottom: 5px; background-color: rgba(0, 0, 0, 0.5);">
             <ui:VisualElement name="bodies-display" class="resource-padding" style="align-items: stretch; justify-content: space-around; flex-direction: row;">
                 <ui:VisualElement name="bodies-icon" style="background-image: url(&apos;project://database/Assets/UI/Sprites/Skull.png?fileID=2800000&amp;guid=587503b6015abc741ad5147fff8f4a06&amp;type=3#Skull&apos;); width: 32px; height: 32px;" />
