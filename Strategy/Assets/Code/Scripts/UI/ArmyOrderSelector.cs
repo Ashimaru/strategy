@@ -33,14 +33,14 @@ public class ArmyOrderSelector : MonoBehaviour
         Hide();
         //Utils.CreateRepeatingTimer(gameObject, 1f, () =>
         //{
-        Vector3 position = UnityEngine.Random.insideUnitCircle;
-        position *= 3f;
-        position.z = transform.position.z;
-        ShowOptions(new List<Operation>()
-        {
-            new Operation(){Name = "Move", Action = () => Debug.Log("Moving!")},
-            new Operation(){Name = "Other", Action = () => Debug.Log("Othering!") }
-        }, position);
+        //Vector3 position = UnityEngine.Random.insideUnitCircle;
+        //position *= 3f;
+        //position.z = transform.position.z;
+        //ShowOptions(new List<Operation>()
+        //{
+        //    new Operation(){Name = "Move", Action = () => Debug.Log("Moving!")},
+        //    new Operation(){Name = "Other", Action = () => Debug.Log("Othering!") }
+        //}, position);
         //},
         //"Test");
     }
@@ -56,7 +56,11 @@ public class ArmyOrderSelector : MonoBehaviour
             var go = Instantiate(_orderPrefab, _orderButtonParent);
             go.name = operation.Name;
             var button = go.GetComponent<Button>();
-            button.onClick.AddListener(() => operation.Action.Invoke());
+            button.onClick.AddListener(() =>
+            {
+                Hide();
+                operation.Action.Invoke();
+            });
 
             var text = go.GetComponentInChildren<TextMeshProUGUI>();
             text.text = operation.Name;

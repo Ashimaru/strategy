@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
@@ -30,6 +29,7 @@ public class ArmyController : MonoBehaviour,
 
     void Start()
     {
+        Debug.Log("Hello");
         ChangePositionTo(Systems.Get<IGrid>().WorldToGrid(transform.position));
         Systems.Get<IRepository<ArmyController>>().Add(this);
     }
@@ -103,22 +103,29 @@ public class ArmyController : MonoBehaviour,
     {
         armyViewController.ClearArmyInfo();
         Systems.Get<ITileSelector>().ClearListener();
+        orderSelector.Hide();
     }
 
     public void TileSelected(Vector3Int coordinates)
     {
         //Debug.Log($"Selected tile {coordinates}");
 
-        //var worldCoord = Systems.Get<IGrid>().GridToWorld(coordinates);
-        //List<Operation> possibleOps = new()
-        //{
-        //    new Operation("Move To", () => MoveTo(coordinates)),
-        //    new Operation("Other", () => Debug.Log("Hello!"))
-        //};
+        var worldCoord = Systems.Get<IGrid>().GridToWorld(coordinates);
+        List<Operation> possibleOps = new()
+        {
+            new Operation("Move To", () =>
+            {
+                if(! Input.GetKey(KeyCode.LeftShift))
+                {
+                    StopCurrentOrder();
+                    OrderQueue.Clear();
+                }
+                MoveTo(coordinates);
+            }),
+            new Operation("Other", () => Debug.Log("Hello!"))
+        };
 
-        //orderSelector.ShowOptions(possibleOps, worldCoord);
-
-        MoveTo(coordinates);
+        orderSelector.ShowOptions(possibleOps, worldCoord);
     }
 
     public void DestroyAfterBattle()
@@ -144,8 +151,6 @@ public class ArmyController : MonoBehaviour,
             armyViewController.ClearArmyInfo();
         }
     }
-
-
     #endregion
 
     public void StopCurrentOrder()

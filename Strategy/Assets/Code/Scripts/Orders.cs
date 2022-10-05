@@ -47,6 +47,8 @@ public class MoveOrder : IOrder
     public void Cancel()
     {
         movementTimer.Cancel();
+        armyToMove.army.CurrentAssigmentDescription = "Standby";
+        onOrderDone();
     }
 
     public string GetOrderDescription()
