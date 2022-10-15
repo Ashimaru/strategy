@@ -52,6 +52,12 @@ public class PatrolController : MonoBehaviour
             return;
         }
 
+        if(_possiblePatrols.Count == 0)
+        {
+            Debug.LogWarning($"{_myLocation.LocationData.LocationName} does not have any patrols defined!");
+            return;
+        }
+
         if(!CanCreatePatrol())
         {
             Debug.Log($"{_myLocation.LocationData.LocationName}: cannot create patrol - Power:{_myLocation.LocationData.Garrison.Power}/{minimumPatrolPower} Size:{_myLocation.LocationData.Garrison.Size}/{minimumPatrolSize}");

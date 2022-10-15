@@ -21,7 +21,9 @@ class ArmyFactory : MonoBehaviour, IArmyFactory
     [SerializeField]
     private Tilemap unitsTilemap;
     [SerializeField]
-    private TileBase armyTile; 
+    private TileBase aiArmyTile;
+    [SerializeField]
+    private TileBase playerArmyTile;
 
     private void Awake()
     {
@@ -40,7 +42,7 @@ class ArmyFactory : MonoBehaviour, IArmyFactory
         armyController.army = army;
         armyController.armyViewController = armyViewController;
         armyController.unitTilemap = unitsTilemap;
-        armyController.armyTile = armyTile;
+        armyController.armyTile = army.Aligment == Alignment.Human ? aiArmyTile : playerArmyTile;
         armyController.orderSelector = orderSelector;
         armyController.ChangePositionTo(position);
 

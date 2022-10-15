@@ -10,8 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 84f44300ba4e13d4cbd5b64e8bd347c9, type: 3}
-  m_Name: Crypt_1
+  m_Name: Hebon
   m_EditorClassIdentifier: 
-  LocationName: Crypt
-  alignment: 0
-  Garrison: {fileID: 11400000, guid: f34ce1cae3a283644aa1470bc3de280f, type: 2}
+  LocationName: Hebon
+  alignment: 1
+  Garrison: {fileID: 11400000, guid: 293342d76f05c414f8064bc688513936, type: 2}
+  VisitingArmies: []

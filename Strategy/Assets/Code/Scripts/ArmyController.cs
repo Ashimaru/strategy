@@ -29,7 +29,6 @@ public class ArmyController : MonoBehaviour,
 
     void Start()
     {
-        Debug.Log("Hello");
         ChangePositionTo(Systems.Get<IGrid>().WorldToGrid(transform.position));
         Systems.Get<IRepository<ArmyController>>().Add(this);
     }

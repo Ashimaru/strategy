@@ -42,15 +42,17 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4704027430877450331}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9e177d515c72c97418701f12e58bd0c7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ParentCity: {fileID: 0}
   _possibleUnits:
   - {fileID: 11400000, guid: 43567577d19803e45b08351611d0b22e, type: 2}
-  _possibleJobs: []
+  - {fileID: 11400000, guid: 61bdf31668bbcdc4f8e79b68835aa7ad, type: 2}
+  _possibleJobs:
+  - {fileID: 11400000, guid: 9878e83859d2d254183dce52391feba0, type: 2}
+  heatSettings: {fileID: 11400000, guid: 59cd97f111202ae40baf7317e2715cf7, type: 2}
   _resourcesGeneratedPerJob: 20
   _resourcesNeededToSendToCity: 100
 --- !u!114 &4704027430877450328
@@ -93,3 +95,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _possiblePatrols: []
   _timeForNextPatrolToBeSent: 60
+  _heatSettings: {fileID: 0}

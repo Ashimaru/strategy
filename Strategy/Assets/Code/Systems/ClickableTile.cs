@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -97,6 +98,13 @@ public class ClickableTile : MonoBehaviour, IClickableTile
 
     void Update()
     {
+        if (Debug.isDebugBuild && Input.GetKeyUp(KeyCode.RightBracket))
+        {
+            var modes = Enum.GetValues(typeof(Scenario)).Cast<int>();
+            var newSelection = (int)selectedScenario + 1;
+            selectedScenario = modes.Contains(newSelection) ? (Scenario)newSelection : (Scenario)modes.First();
+        }
+
         if (!Input.GetMouseButtonDown(0))
         {
             return;

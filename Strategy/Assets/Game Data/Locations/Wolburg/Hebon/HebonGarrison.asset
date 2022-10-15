@@ -10,9 +10,13 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 88e25844a5a07814881a6b247ce485df, type: 3}
-  m_Name: Garrison
+  m_Name: HebonGarrison
   m_EditorClassIdentifier: 
-  ArmyName: 
+  ArmyName: Garrison
   CurrentAssigmentDescription: Standby
-  Aligment: 0
-  soldiers: []
+  Aligment: 1
+  soldiers:
+  - NumberOfMembers: 10
+    unitData: {fileID: 11400000, guid: 43567577d19803e45b08351611d0b22e, type: 2}
+  - NumberOfMembers: 10
+    unitData: {fileID: 11400000, guid: 61bdf31668bbcdc4f8e79b68835aa7ad, type: 2}
