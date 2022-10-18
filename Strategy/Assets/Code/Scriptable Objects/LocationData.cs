@@ -6,7 +6,7 @@ using UnityEngine;
 public class LocationData : ScriptableObject
 {
     public string LocationName = "";
-    public Alignment alignment;
+    public Alignment alignment = Alignment.Human;
     public Army Garrison;
 
     public List<Army> VisitingArmies = new();

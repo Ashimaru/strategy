@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
 
 public enum Alignment
@@ -19,6 +17,12 @@ public class SoldierGroup
     public int NumberOfMembers;
     [SerializeField]
     public UnitData unitData;
+
+    public override string ToString()
+    {
+        var unitName = unitData == null ? "null" : unitData.UnitTypeName;
+        return $"{NumberOfMembers} {unitName}";
+    }
 }
 
 [CreateAssetMenu(fileName = "Army", menuName = "Game/Army")]
@@ -26,7 +30,7 @@ public class Army : ScriptableObject
 {
     public string ArmyName = "";
     public string CurrentAssigmentDescription = "Standby";
-    public Alignment Aligment;
+    public Alignment Aligment = Alignment.Human;
     public List<SoldierGroup> soldiers = new();
 
     public int Power
@@ -83,9 +87,10 @@ public class Army : ScriptableObject
         var soldierGroupInGarrison = soldiers.FirstOrDefault(currentArmy => currentArmy.unitData.UnitTypeName == unitData.UnitTypeName);
         if (soldierGroupInGarrison == null)
         {
-            soldiers.Add(new SoldierGroup { 
+            soldiers.Add(new SoldierGroup
+            {
                 NumberOfMembers = amount,
-                unitData =  unitData 
+                unitData = unitData
             });
             return;
         }
@@ -95,7 +100,7 @@ public class Army : ScriptableObject
 
     private int CalculateNumberOfSoldiers()
     {
-        return soldiers.Sum(group =>  group.NumberOfMembers);
+        return soldiers.Sum(group => group.NumberOfMembers);
     }
 
     private int CalculatePower()

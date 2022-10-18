@@ -11,6 +11,7 @@ public static class ExtensionMethods
         foreach (var elem in enumerable)
         {
             result += elem;
+            result += ',';
         }
         result += ']';
 
